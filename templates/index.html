@@ -8,53 +8,57 @@
 </head>
 <body class="bg-slate-50 text-slate-800 antialiased">
 
-  <!-- Hero -->
   <header class="bg-gradient-to-br from-indigo-900 via-indigo-800 to-teal-800 text-white">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
       <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight">Técnicas de Usabilidad</h1>
       <p class="mt-4 text-lg sm:text-xl text-indigo-100 max-w-3xl">
-        Guía práctica para desarrolladores de software que quieren encontrar, filtrar y aplicar técnicas de usabilidad sin experiencia previa en UX.
+        Guía práctica para desarrolladores que quieren encontrar, filtrar y aplicar técnicas de usabilidad sin experiencia previa en UX.
       </p>
 
-      <!-- Wizard -->
       <section class="mt-10 p-6 sm:p-8 rounded-2xl bg-white/10 backdrop-blur border border-white/20" aria-labelledby="wizard-heading">
         <h2 id="wizard-heading" class="text-xl sm:text-2xl font-semibold">¿No sabes por dónde empezar?</h2>
-        <p class="mt-2 text-indigo-100 text-sm sm:text-base">Responde tres preguntas y te recomendamos una técnica.</p>
+        <p class="mt-2 text-indigo-100 text-sm sm:text-base">Responde las tres preguntas paso a paso y te guiamos a una técnica.</p>
 
-        <div class="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <label class="block">
-            <span class="text-sm font-medium text-indigo-100">Fase del proyecto</span>
-            <select id="wizard-phase" class="mt-1 w-full rounded-lg border-0 bg-white text-slate-800 px-3 py-2.5 text-sm focus:ring-2 focus:ring-teal-400">
-              <option value="">Selecciona…</option>
+        <div class="mt-4 flex gap-2" aria-hidden="true">
+          <span id="wiz-dot-1" class="h-2 flex-1 rounded-full bg-teal-400"></span>
+          <span id="wiz-dot-2" class="h-2 flex-1 rounded-full bg-white/30"></span>
+          <span id="wiz-dot-3" class="h-2 flex-1 rounded-full bg-white/30"></span>
+        </div>
+
+        <div id="wizard-panel" class="mt-6">
+          <div class="wizard-step" data-step="1">
+            <p class="text-sm font-medium text-indigo-100 mb-2">Pregunta 1 de 3 · Fase del proyecto</p>
+            <select id="wizard-phase" class="w-full rounded-lg border-0 bg-white text-slate-800 px-3 py-2.5 text-sm focus:ring-2 focus:ring-teal-400">
+              <option value="">Selecciona una opción…</option>
               <option value="idea">Idea inicial</option>
               <option value="diseño">Diseño (prototipo)</option>
               <option value="producto">Producto ya desarrollado</option>
             </select>
-          </label>
-          <label class="block">
-            <span class="text-sm font-medium text-indigo-100">Tiempo disponible</span>
-            <select id="wizard-duration" class="mt-1 w-full rounded-lg border-0 bg-white text-slate-800 px-3 py-2.5 text-sm focus:ring-2 focus:ring-teal-400">
-              <option value="">Selecciona…</option>
+          </div>
+          <div class="wizard-step hidden" data-step="2">
+            <p class="text-sm font-medium text-indigo-100 mb-2">Pregunta 2 de 3 · Tiempo disponible</p>
+            <select id="wizard-duration" class="w-full rounded-lg border-0 bg-white text-slate-800 px-3 py-2.5 text-sm focus:ring-2 focus:ring-teal-400">
+              <option value="">Selecciona una opción…</option>
               <option value="poco">Poco (&lt;1 día)</option>
               <option value="medio">Medio (varios días)</option>
               <option value="mucho">Mucho (semanas)</option>
             </select>
-          </label>
-          <label class="block">
-            <span class="text-sm font-medium text-indigo-100">Tipo de técnica</span>
-            <select id="wizard-category" class="mt-1 w-full rounded-lg border-0 bg-white text-slate-800 px-3 py-2.5 text-sm focus:ring-2 focus:ring-teal-400">
-              <option value="">Selecciona…</option>
+          </div>
+          <div class="wizard-step hidden" data-step="3">
+            <p class="text-sm font-medium text-indigo-100 mb-2">Pregunta 3 de 3 · Tipo de técnica</p>
+            <select id="wizard-category" class="w-full rounded-lg border-0 bg-white text-slate-800 px-3 py-2.5 text-sm focus:ring-2 focus:ring-teal-400">
+              <option value="">Selecciona una opción…</option>
               <option value="cuestionarios">Cuestionarios</option>
               <option value="observacion">Observación directa</option>
               <option value="opiniones">Opiniones / entrevistas</option>
             </select>
-          </label>
-          <div class="flex items-end">
-            <button type="button" id="wizard-submit"
-              class="w-full rounded-lg bg-teal-500 hover:bg-teal-400 text-white font-semibold px-4 py-2.5 text-sm transition focus:outline-none focus:ring-2 focus:ring-teal-300 focus:ring-offset-2 focus:ring-offset-indigo-800">
-              Recomendar técnica
-            </button>
           </div>
+        </div>
+
+        <div class="mt-6 flex flex-wrap gap-3">
+          <button type="button" id="wizard-prev" class="hidden rounded-lg border border-white/40 px-4 py-2.5 text-sm font-semibold hover:bg-white/10 focus:ring-2 focus:ring-teal-300">Anterior</button>
+          <button type="button" id="wizard-next" class="rounded-lg bg-teal-500 hover:bg-teal-400 text-white font-semibold px-5 py-2.5 text-sm focus:ring-2 focus:ring-teal-300">Siguiente</button>
+          <button type="button" id="wizard-submit" class="hidden rounded-lg bg-white text-indigo-900 font-semibold px-5 py-2.5 text-sm hover:bg-indigo-50 focus:ring-2 focus:ring-white">Recomendar técnica</button>
         </div>
       </section>
     </div>
@@ -62,10 +66,8 @@
 
   <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
 
-    <!-- Search & Filters -->
     <section class="sticky top-0 z-20 -mx-4 px-4 sm:mx-0 sm:px-0 py-4 bg-slate-50/95 backdrop-blur border-b border-slate-200 mb-8" aria-labelledby="filters-heading">
       <h2 id="filters-heading" class="sr-only">Buscar y filtrar técnicas</h2>
-
       <label for="search" class="sr-only">Buscar técnicas</label>
       <input type="search" id="search" placeholder="Buscar por nombre o objetivo…"
         class="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm shadow-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 outline-none">
@@ -73,48 +75,43 @@
       <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-6">
         <fieldset>
           <legend class="text-sm font-semibold text-slate-700 mb-2">Duración</legend>
-          <div class="flex flex-wrap gap-2" data-filter-group="duration">
-            <label class="cursor-pointer"><input type="radio" name="duration" value="" class="peer sr-only" checked><span class="inline-block rounded-full border border-slate-300 bg-white px-3 py-1.5 text-xs font-medium peer-checked:bg-indigo-600 peer-checked:text-white peer-checked:border-indigo-600 hover:border-indigo-400 transition">Todas</span></label>
-            <label class="cursor-pointer"><input type="radio" name="duration" value="poco" class="peer sr-only"><span class="inline-block rounded-full border border-slate-300 bg-white px-3 py-1.5 text-xs font-medium peer-checked:bg-indigo-600 peer-checked:text-white peer-checked:border-indigo-600 hover:border-indigo-400 transition">Poco (&lt;1 día)</span></label>
-            <label class="cursor-pointer"><input type="radio" name="duration" value="medio" class="peer sr-only"><span class="inline-block rounded-full border border-slate-300 bg-white px-3 py-1.5 text-xs font-medium peer-checked:bg-indigo-600 peer-checked:text-white peer-checked:border-indigo-600 hover:border-indigo-400 transition">Medio (varios días)</span></label>
-            <label class="cursor-pointer"><input type="radio" name="duration" value="mucho" class="peer sr-only"><span class="inline-block rounded-full border border-slate-300 bg-white px-3 py-1.5 text-xs font-medium peer-checked:bg-indigo-600 peer-checked:text-white peer-checked:border-indigo-600 hover:border-indigo-400 transition">Mucho (semanas)</span></label>
+          <div class="flex flex-wrap gap-2">
+            <label class="cursor-pointer"><input type="radio" name="duration" value="" class="peer sr-only" checked><span class="inline-block rounded-full border border-slate-300 bg-white px-3 py-1.5 text-xs font-medium peer-checked:bg-indigo-600 peer-checked:text-white peer-checked:border-indigo-600">Todas</span></label>
+            <label class="cursor-pointer"><input type="radio" name="duration" value="poco" class="peer sr-only"><span class="inline-block rounded-full border border-slate-300 bg-white px-3 py-1.5 text-xs font-medium peer-checked:bg-indigo-600 peer-checked:text-white peer-checked:border-indigo-600">Poco (&lt;1 día)</span></label>
+            <label class="cursor-pointer"><input type="radio" name="duration" value="medio" class="peer sr-only"><span class="inline-block rounded-full border border-slate-300 bg-white px-3 py-1.5 text-xs font-medium peer-checked:bg-indigo-600 peer-checked:text-white peer-checked:border-indigo-600">Medio (varios días)</span></label>
+            <label class="cursor-pointer"><input type="radio" name="duration" value="mucho" class="peer sr-only"><span class="inline-block rounded-full border border-slate-300 bg-white px-3 py-1.5 text-xs font-medium peer-checked:bg-indigo-600 peer-checked:text-white peer-checked:border-indigo-600">Mucho (semanas)</span></label>
           </div>
         </fieldset>
         <fieldset>
           <legend class="text-sm font-semibold text-slate-700 mb-2">Fase</legend>
-          <div class="flex flex-wrap gap-2" data-filter-group="phase">
-            <label class="cursor-pointer"><input type="radio" name="phase" value="" class="peer sr-only" checked><span class="inline-block rounded-full border border-slate-300 bg-white px-3 py-1.5 text-xs font-medium peer-checked:bg-indigo-600 peer-checked:text-white peer-checked:border-indigo-600 hover:border-indigo-400 transition">Todas</span></label>
-            <label class="cursor-pointer"><input type="radio" name="phase" value="idea" class="peer sr-only"><span class="inline-block rounded-full border border-slate-300 bg-white px-3 py-1.5 text-xs font-medium peer-checked:bg-indigo-600 peer-checked:text-white peer-checked:border-indigo-600 hover:border-indigo-400 transition">Idea inicial</span></label>
-            <label class="cursor-pointer"><input type="radio" name="phase" value="diseño" class="peer sr-only"><span class="inline-block rounded-full border border-slate-300 bg-white px-3 py-1.5 text-xs font-medium peer-checked:bg-indigo-600 peer-checked:text-white peer-checked:border-indigo-600 hover:border-indigo-400 transition">Diseño (prototipo)</span></label>
-            <label class="cursor-pointer"><input type="radio" name="phase" value="producto" class="peer sr-only"><span class="inline-block rounded-full border border-slate-300 bg-white px-3 py-1.5 text-xs font-medium peer-checked:bg-indigo-600 peer-checked:text-white peer-checked:border-indigo-600 hover:border-indigo-400 transition">Producto ya desarrollado</span></label>
+          <div class="flex flex-wrap gap-2">
+            <label class="cursor-pointer"><input type="radio" name="phase" value="" class="peer sr-only" checked><span class="inline-block rounded-full border border-slate-300 bg-white px-3 py-1.5 text-xs font-medium peer-checked:bg-indigo-600 peer-checked:text-white peer-checked:border-indigo-600">Todas</span></label>
+            <label class="cursor-pointer"><input type="radio" name="phase" value="idea" class="peer sr-only"><span class="inline-block rounded-full border border-slate-300 bg-white px-3 py-1.5 text-xs font-medium peer-checked:bg-indigo-600 peer-checked:text-white peer-checked:border-indigo-600">Idea inicial</span></label>
+            <label class="cursor-pointer"><input type="radio" name="phase" value="diseño" class="peer sr-only"><span class="inline-block rounded-full border border-slate-300 bg-white px-3 py-1.5 text-xs font-medium peer-checked:bg-indigo-600 peer-checked:text-white peer-checked:border-indigo-600">Diseño (prototipo)</span></label>
+            <label class="cursor-pointer"><input type="radio" name="phase" value="producto" class="peer sr-only"><span class="inline-block rounded-full border border-slate-300 bg-white px-3 py-1.5 text-xs font-medium peer-checked:bg-indigo-600 peer-checked:text-white peer-checked:border-indigo-600">Producto ya desarrollado</span></label>
           </div>
         </fieldset>
         <fieldset>
           <legend class="text-sm font-semibold text-slate-700 mb-2">Tipo</legend>
-          <div class="flex flex-wrap gap-2" data-filter-group="category">
-            <label class="cursor-pointer"><input type="radio" name="category" value="" class="peer sr-only" checked><span class="inline-block rounded-full border border-slate-300 bg-white px-3 py-1.5 text-xs font-medium peer-checked:bg-indigo-600 peer-checked:text-white peer-checked:border-indigo-600 hover:border-indigo-400 transition">Todos</span></label>
-            <label class="cursor-pointer"><input type="radio" name="category" value="cuestionarios" class="peer sr-only"><span class="inline-block rounded-full border border-slate-300 bg-white px-3 py-1.5 text-xs font-medium peer-checked:bg-indigo-600 peer-checked:text-white peer-checked:border-indigo-600 hover:border-indigo-400 transition">Cuestionarios</span></label>
-            <label class="cursor-pointer"><input type="radio" name="category" value="observacion" class="peer sr-only"><span class="inline-block rounded-full border border-slate-300 bg-white px-3 py-1.5 text-xs font-medium peer-checked:bg-indigo-600 peer-checked:text-white peer-checked:border-indigo-600 hover:border-indigo-400 transition">Observación directa</span></label>
-            <label class="cursor-pointer"><input type="radio" name="category" value="opiniones" class="peer sr-only"><span class="inline-block rounded-full border border-slate-300 bg-white px-3 py-1.5 text-xs font-medium peer-checked:bg-indigo-600 peer-checked:text-white peer-checked:border-indigo-600 hover:border-indigo-400 transition">Opiniones / entrevistas</span></label>
+          <div class="flex flex-wrap gap-2">
+            <label class="cursor-pointer"><input type="radio" name="category" value="" class="peer sr-only" checked><span class="inline-block rounded-full border border-slate-300 bg-white px-3 py-1.5 text-xs font-medium peer-checked:bg-indigo-600 peer-checked:text-white peer-checked:border-indigo-600">Todos</span></label>
+            <label class="cursor-pointer"><input type="radio" name="category" value="cuestionarios" class="peer sr-only"><span class="inline-block rounded-full border border-slate-300 bg-white px-3 py-1.5 text-xs font-medium peer-checked:bg-indigo-600 peer-checked:text-white peer-checked:border-indigo-600">Cuestionarios</span></label>
+            <label class="cursor-pointer"><input type="radio" name="category" value="observacion" class="peer sr-only"><span class="inline-block rounded-full border border-slate-300 bg-white px-3 py-1.5 text-xs font-medium peer-checked:bg-indigo-600 peer-checked:text-white peer-checked:border-indigo-600">Observación directa</span></label>
+            <label class="cursor-pointer"><input type="radio" name="category" value="opiniones" class="peer sr-only"><span class="inline-block rounded-full border border-slate-300 bg-white px-3 py-1.5 text-xs font-medium peer-checked:bg-indigo-600 peer-checked:text-white peer-checked:border-indigo-600">Opiniones / entrevistas</span></label>
           </div>
         </fieldset>
       </div>
 
       <div class="mt-4 flex flex-wrap items-center justify-between gap-3">
-        <p id="result-count" class="text-sm text-slate-600" aria-live="polite">Mostrando 5 de 5 técnicas</p>
-        <button type="button" id="clear-filters"
-          class="text-sm font-medium text-indigo-600 hover:text-indigo-800 focus:outline-none focus:underline">
-          Limpiar filtros
-        </button>
+        <p id="result-count" class="text-sm text-slate-600" aria-live="polite">Mostrando {{ len .Techniques }} de {{ len .Techniques }} técnicas</p>
+        <button type="button" id="clear-filters" class="text-sm font-medium text-indigo-600 hover:text-indigo-800 focus:underline">Limpiar filtros</button>
       </div>
     </section>
 
-    <!-- Empty state -->
     <p id="empty-state" class="hidden text-center py-16 text-slate-500" role="status">
-      No hay técnicas que coincidan con tu búsqueda o filtros. Prueba a ampliar los criterios.
+      No hay técnicas que coincidan con tu búsqueda o filtros.
     </p>
 
-    <!-- Cards grid -->
     <section id="cards-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" aria-label="Listado de técnicas">
       {{ range .Techniques }}
       <article
@@ -124,29 +121,36 @@
         data-duration="{{ .Duration }}"
         data-phase="{{ .Phase }}"
         data-category="{{ .Category }}"
-        data-search="{{ .Name }} {{ .Objective }} {{ .Lifecycle }} {{ .MethodType }} {{ .QualQuant }}"
+        data-introduction="{{ .Introduction }}"
+        data-search="{{ .Name }} {{ .Objective }} {{ .Introduction }} {{ .Lifecycle }} {{ .MethodType }} {{ .QualQuant }}"
       >
         <div class="aspect-[5/3] bg-gradient-to-br from-slate-200 to-slate-300 flex items-center justify-center" role="img" aria-label="{{ .ImageAlt }}">
           <span class="text-4xl font-bold text-slate-400/80 select-none" aria-hidden="true">{{ initial .Name }}</span>
         </div>
-        <div class="flex flex-col flex-1 p-5">
+        <div class="relative flex flex-col flex-1 p-5">
           <h3 class="text-lg font-bold text-slate-900">{{ .Name }}</h3>
-          <p class="mt-2 text-sm text-slate-600 line-clamp-3 flex-1">{{ .Objective }}</p>
 
-          <div id="detail-{{ .ID }}" class="hidden mt-4 pt-4 border-t border-slate-100 text-sm text-slate-600 space-y-2">
-            <p><span class="font-semibold text-slate-800">Objetivo:</span> {{ .Objective }}</p>
-            <p><span class="font-semibold text-slate-800">Ciclo de vida:</span> {{ .Lifecycle }}</p>
-            <p><span class="font-semibold text-slate-800">Tipo:</span> {{ .MethodType }} / {{ .QualQuant }}</p>
-            <p><span class="font-semibold text-slate-800">Requisitos:</span> {{ .Requirements }}</p>
+          <p
+            class="objective-focus mt-2 text-sm text-slate-600 line-clamp-3 flex-1 rounded-md outline-none focus:ring-2 focus:ring-indigo-400 focus:bg-indigo-50/50 cursor-help"
+            tabindex="0"
+            role="button"
+            aria-label="Objetivo de {{ .Name }}. Pulsa para ver introducción."
+            data-intro-target="intro-{{ .ID }}"
+          >{{ .Objective }}</p>
+
+          <div
+            id="intro-{{ .ID }}"
+            class="intro-popover hidden absolute left-5 right-5 top-full z-30 mt-1 rounded-lg border border-indigo-200 bg-white p-4 text-sm text-slate-700 shadow-xl"
+            role="tooltip"
+          >
+            <p class="font-semibold text-indigo-800 text-xs uppercase tracking-wide mb-1">Introducción</p>
+            <p>{{ .Introduction }}</p>
           </div>
 
-          <button type="button"
-            class="expand-btn mt-4 w-full rounded-lg border border-indigo-200 bg-indigo-50 text-indigo-700 font-semibold text-sm py-2.5 hover:bg-indigo-100 transition focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            data-target="detail-{{ .ID }}"
-            aria-expanded="false"
-            aria-controls="detail-{{ .ID }}">
+          <a href="/tecnicas/{{ .ID }}"
+            class="mt-4 w-full text-center rounded-lg border border-indigo-200 bg-indigo-50 text-indigo-700 font-semibold text-sm py-2.5 hover:bg-indigo-100 transition focus:outline-none focus:ring-2 focus:ring-indigo-500">
             Ver más
-          </button>
+          </a>
         </div>
       </article>
       {{ end }}
@@ -155,39 +159,33 @@
 
   <footer class="border-t border-slate-200 bg-white mt-12">
     <p class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 text-center text-sm text-slate-500">
-      Interacción Persona-Ordenador · Showcase de técnicas de usabilidad
+      IPO · <a href="/admin" class="text-indigo-600 hover:underline">Administración</a>
     </p>
   </footer>
 
-  <!-- Wizard modal -->
   <div id="wizard-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="modal-title">
     <div class="absolute inset-0 bg-slate-900/60" data-close-modal></div>
-    <div class="relative w-full max-w-md rounded-2xl bg-white shadow-2xl p-6 sm:p-8">
-      <h2 id="modal-title" class="text-xl font-bold text-slate-900">Técnica recomendada</h2>
-      <p id="modal-technique-name" class="mt-2 text-lg font-semibold text-indigo-700"></p>
-      <p id="modal-technique-objective" class="mt-3 text-sm text-slate-600"></p>
+    <div class="relative w-full max-w-lg rounded-2xl bg-white shadow-2xl p-6 sm:p-8">
+      <h2 id="modal-title" class="text-xl font-bold text-slate-900">Tu técnica recomendada</h2>
+      <p class="mt-1 text-sm text-slate-500">Según tus respuestas en el cuestionario:</p>
+      <p id="modal-technique-name" class="mt-4 text-lg font-semibold text-indigo-700"></p>
+      <p id="modal-technique-intro" class="mt-2 text-sm text-slate-600"></p>
       <div class="mt-6 flex flex-col sm:flex-row gap-3">
-        <button type="button" id="modal-go-card"
-          class="flex-1 rounded-lg bg-indigo-600 text-white font-semibold py-2.5 text-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-          Ver en la lista
-        </button>
-        <button type="button" data-close-modal
-          class="flex-1 rounded-lg border border-slate-300 text-slate-700 font-semibold py-2.5 text-sm hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-slate-400">
-          Cerrar
-        </button>
+        <a id="modal-detail-link" href="#" class="flex-1 text-center rounded-lg bg-indigo-600 text-white font-semibold py-2.5 text-sm hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500">Ver ficha completa</a>
+        <button type="button" id="modal-go-card" class="flex-1 rounded-lg border border-indigo-200 text-indigo-700 font-semibold py-2.5 text-sm hover:bg-indigo-50">Ver en la lista</button>
+        <button type="button" data-close-modal class="flex-1 rounded-lg border border-slate-300 text-slate-700 font-semibold py-2.5 text-sm hover:bg-slate-50">Cerrar</button>
       </div>
     </div>
   </div>
 
   <script>
     (function () {
-      const TOTAL = document.querySelectorAll('.technique-card').length;
       const cards = Array.from(document.querySelectorAll('.technique-card'));
+      let TOTAL = cards.length;
       const searchInput = document.getElementById('search');
       const resultCount = document.getElementById('result-count');
       const emptyState = document.getElementById('empty-state');
       const cardsGrid = document.getElementById('cards-grid');
-      const clearBtn = document.getElementById('clear-filters');
 
       function getFilter(name) {
         const el = document.querySelector('input[name="' + name + '"]:checked');
@@ -196,8 +194,7 @@
 
       function cardMatchesPhase(card, phaseFilter) {
         if (!phaseFilter) return true;
-        const phases = (card.dataset.phase || '').split(',');
-        return phases.includes(phaseFilter);
+        return (card.dataset.phase || '').split(',').includes(phaseFilter);
       }
 
       function cardVisible(card) {
@@ -205,7 +202,6 @@
         const duration = getFilter('duration');
         const phase = getFilter('phase');
         const category = getFilter('category');
-
         if (duration && card.dataset.duration !== duration) return false;
         if (!cardMatchesPhase(card, phase)) return false;
         if (category && card.dataset.category !== category) return false;
@@ -226,14 +222,12 @@
       }
 
       function setFilters(duration, phase, category) {
-        function setRadio(name, value) {
+        ['duration', 'phase', 'category'].forEach(function (name) {
+          const val = name === 'duration' ? duration : name === 'phase' ? phase : category;
           document.querySelectorAll('input[name="' + name + '"]').forEach(function (input) {
-            input.checked = input.value === value;
+            input.checked = input.value === (val || '');
           });
-        }
-        setRadio('duration', duration || '');
-        setRadio('phase', phase || '');
-        setRadio('category', category || '');
+        });
         applyFilters();
       }
 
@@ -241,40 +235,110 @@
         el.addEventListener('change', applyFilters);
       });
       searchInput.addEventListener('input', applyFilters);
-
-      clearBtn.addEventListener('click', function () {
+      document.getElementById('clear-filters').addEventListener('click', function () {
         searchInput.value = '';
         setFilters('', '', '');
       });
 
-      document.querySelectorAll('.expand-btn').forEach(function (btn) {
-        btn.addEventListener('click', function () {
-          const targetId = btn.getAttribute('data-target');
-          const detail = document.getElementById(targetId);
-          const expanded = btn.getAttribute('aria-expanded') === 'true';
-          document.querySelectorAll('.expand-btn').forEach(function (other) {
-            if (other === btn) return;
-            const otherDetail = document.getElementById(other.getAttribute('data-target'));
-            other.setAttribute('aria-expanded', 'false');
-            other.textContent = 'Ver más';
-            if (otherDetail) otherDetail.classList.add('hidden');
-          });
-          if (detail) detail.classList.toggle('hidden', expanded);
-          btn.setAttribute('aria-expanded', expanded ? 'false' : 'true');
-          btn.textContent = expanded ? 'Ver más' : 'Ver menos';
+      function hideAllPopovers() {
+        document.querySelectorAll('.intro-popover').forEach(function (p) { p.classList.add('hidden'); });
+      }
+
+      document.querySelectorAll('.objective-focus').forEach(function (el) {
+        el.addEventListener('focus', function () {
+          hideAllPopovers();
+          const pop = document.getElementById(el.getAttribute('data-intro-target'));
+          if (pop) pop.classList.remove('hidden');
+        });
+        el.addEventListener('blur', function () {
+          setTimeout(function () {
+            const pop = document.getElementById(el.getAttribute('data-intro-target'));
+            if (pop && !pop.matches(':hover') && !el.matches(':focus')) pop.classList.add('hidden');
+          }, 150);
+        });
+        el.addEventListener('keydown', function (e) {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            el.focus();
+            const pop = document.getElementById(el.getAttribute('data-intro-target'));
+            if (pop) pop.classList.toggle('hidden');
+          }
         });
       });
 
+      let wizStep = 1;
+      const wizSteps = document.querySelectorAll('.wizard-step');
+      const wizPrev = document.getElementById('wizard-prev');
+      const wizNext = document.getElementById('wizard-next');
+      const wizSubmit = document.getElementById('wizard-submit');
+      const wizDots = [1, 2, 3].map(function (n) { return document.getElementById('wiz-dot-' + n); });
+
+      function wizSelectForStep(step) {
+        if (step === 1) return document.getElementById('wizard-phase');
+        if (step === 2) return document.getElementById('wizard-duration');
+        return document.getElementById('wizard-category');
+      }
+
+      function updateWizardUI() {
+        wizSteps.forEach(function (s) {
+          s.classList.toggle('hidden', parseInt(s.dataset.step, 10) !== wizStep);
+        });
+        wizDots.forEach(function (d, i) {
+          d.classList.toggle('bg-teal-400', i + 1 <= wizStep);
+          d.classList.toggle('bg-white/30', i + 1 > wizStep);
+        });
+        wizPrev.classList.toggle('hidden', wizStep === 1);
+        wizNext.classList.toggle('hidden', wizStep === 3);
+        wizSubmit.classList.toggle('hidden', wizStep !== 3);
+      }
+
+      function validateCurrentStep() {
+        const sel = wizSelectForStep(wizStep);
+        if (!sel.value) {
+          alert('Selecciona una opción antes de continuar.');
+          sel.focus();
+          return false;
+        }
+        return true;
+      }
+
+      wizNext.addEventListener('click', function () {
+        if (!validateCurrentStep()) return;
+        if (wizStep < 3) { wizStep++; updateWizardUI(); }
+      });
+      wizPrev.addEventListener('click', function () {
+        if (wizStep > 1) { wizStep--; updateWizardUI(); }
+      });
+
+      function scoreCard(card, phase, duration, category) {
+        let score = 0;
+        if (phase && cardMatchesPhase(card, phase)) score += 3;
+        if (duration && card.dataset.duration === duration) score += 2;
+        if (category && card.dataset.category === category) score += 2;
+        return score;
+      }
+
+      function findBestMatch(phase, duration, category) {
+        let best = null;
+        let bestScore = -1;
+        cards.forEach(function (card) {
+          const s = scoreCard(card, phase, duration, category);
+          if (s > bestScore) { bestScore = s; best = card; }
+        });
+        return bestScore > 0 ? best : null;
+      }
+
       const modal = document.getElementById('wizard-modal');
       const modalName = document.getElementById('modal-technique-name');
-      const modalObjective = document.getElementById('modal-technique-objective');
-      const modalGoCard = document.getElementById('modal-go-card');
+      const modalIntro = document.getElementById('modal-technique-intro');
+      const modalDetailLink = document.getElementById('modal-detail-link');
       let recommendedId = null;
 
       function openModal(card) {
         recommendedId = card.dataset.id;
         modalName.textContent = card.querySelector('h3').textContent;
-        modalObjective.textContent = card.querySelector('.line-clamp-3').textContent;
+        modalIntro.textContent = card.dataset.introduction || card.querySelector('.objective-focus').textContent;
+        modalDetailLink.href = '/tecnicas/' + recommendedId;
         modal.classList.remove('hidden');
         document.body.classList.add('overflow-hidden');
       }
@@ -288,46 +352,32 @@
         el.addEventListener('click', closeModal);
       });
 
-      document.getElementById('wizard-submit').addEventListener('click', function () {
+      wizSubmit.addEventListener('click', function () {
+        if (!validateCurrentStep()) return;
         const phase = document.getElementById('wizard-phase').value;
         const duration = document.getElementById('wizard-duration').value;
         const category = document.getElementById('wizard-category').value;
-
-        if (!phase || !duration || !category) {
-          alert('Completa las tres preguntas del cuestionario para obtener una recomendación.');
-          return;
-        }
-
-        const match = cards.find(function (card) {
-          if (duration && card.dataset.duration !== duration) return false;
-          if (!cardMatchesPhase(card, phase)) return false;
-          if (category && card.dataset.category !== category) return false;
-          return true;
-        });
-
+        const match = findBestMatch(phase, duration, category);
         if (!match) {
-          alert('No encontramos una técnica exacta con esos criterios. Prueba ajustar tus respuestas o usa los filtros de la lista.');
+          alert('No hay técnica que encaje con esa combinación. Prueba otras respuestas o explora el listado con filtros.');
           return;
         }
-
         openModal(match);
-        alert('Recomendación: ' + match.querySelector('h3').textContent);
       });
 
-      modalGoCard.addEventListener('click', function () {
+      document.getElementById('modal-go-card').addEventListener('click', function () {
         if (!recommendedId) return;
-        const phase = document.getElementById('wizard-phase').value;
-        const duration = document.getElementById('wizard-duration').value;
-        const category = document.getElementById('wizard-category').value;
-        setFilters(duration, phase, category);
+        setFilters(
+          document.getElementById('wizard-duration').value,
+          document.getElementById('wizard-phase').value,
+          document.getElementById('wizard-category').value
+        );
         closeModal();
         const card = document.getElementById('card-' + recommendedId);
         if (card) {
           card.scrollIntoView({ behavior: 'smooth', block: 'center' });
           card.classList.add('ring-2', 'ring-teal-500', 'ring-offset-2');
-          setTimeout(function () {
-            card.classList.remove('ring-2', 'ring-teal-500', 'ring-offset-2');
-          }, 2500);
+          setTimeout(function () { card.classList.remove('ring-2', 'ring-teal-500', 'ring-offset-2'); }, 2500);
         }
       });
 

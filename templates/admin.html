@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Administración · Técnicas</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-100 text-slate-800 antialiased min-h-screen">
+
+  <header class="bg-indigo-900 text-white">
+    <div class="max-w-5xl mx-auto px-4 py-6 flex flex-wrap items-center justify-between gap-4">
+      <div>
+        <h1 class="text-xl font-bold">Administración de técnicas</h1>
+        <p class="text-sm text-indigo-200">API REST · usuario <code class="bg-white/10 px-1 rounded">adminipo</code></p>
+      </div>
+      <a href="/" class="text-sm text-indigo-200 hover:text-white">← Inicio público</a>
+    </div>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-4 py-8 space-y-8">
+
+    <section id="login-panel" class="rounded-xl bg-white border border-slate-200 p-6 shadow-sm max-w-md">
+      <h2 class="font-semibold text-lg">Iniciar sesión</h2>
+      <form id="login-form" class="mt-4 space-y-3">
+        <label class="block text-sm">
+          <span class="font-medium">Usuario</span>
+          <input type="text" id="login-user" value="adminipo" required
+            class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500">
+        </label>
+        <label class="block text-sm">
+          <span class="font-medium">Contraseña</span>
+          <input type="password" id="login-pass" required
+            class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500">
+        </label>
+        <button type="submit" class="w-full rounded-lg bg-indigo-600 text-white font-semibold py-2.5 text-sm hover:bg-indigo-700">
+          Entrar
+        </button>
+      </form>
+      <p id="login-error" class="hidden mt-3 text-sm text-red-600"></p>
+    </section>
+
+    <section id="admin-panel" class="hidden space-y-6">
+      <div class="flex flex-wrap gap-3 justify-between items-center">
+        <h2 class="font-semibold text-lg">Técnicas registradas</h2>
+        <button type="button" id="btn-new" class="rounded-lg bg-teal-600 text-white text-sm font-semibold px-4 py-2 hover:bg-teal-700">+ Nueva técnica</button>
+      </div>
+
+      <div id="technique-list" class="space-y-3"></div>
+
+      <section id="editor" class="hidden rounded-xl bg-white border border-slate-200 p-6 shadow-sm">
+        <h3 id="editor-title" class="font-semibold text-lg mb-4">Editar técnica</h3>
+        <form id="technique-form" class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+          <label class="sm:col-span-2">ID (slug)
+            <input name="id" required pattern="[a-z0-9-]+" class="mt-1 w-full rounded border px-3 py-2" placeholder="mi-tecnica">
+          </label>
+          <label class="sm:col-span-2">Nombre
+            <input name="name" required class="mt-1 w-full rounded border px-3 py-2">
+          </label>
+          <label class="sm:col-span-2">Introducción (breve)
+            <textarea name="introduction" required rows="2" class="mt-1 w-full rounded border px-3 py-2"></textarea>
+          </label>
+          <label class="sm:col-span-2">Objetivo
+            <textarea name="objective" required rows="2" class="mt-1 w-full rounded border px-3 py-2"></textarea>
+          </label>
+          <label>Ciclo de vida
+            <input name="lifecycle" required class="mt-1 w-full rounded border px-3 py-2">
+          </label>
+          <label>Tipo método
+            <input name="methodType" required class="mt-1 w-full rounded border px-3 py-2">
+          </label>
+          <label>Cual/Cuant
+            <input name="qualQuant" required class="mt-1 w-full rounded border px-3 py-2">
+          </label>
+          <label>Requisitos
+            <input name="requirements" required class="mt-1 w-full rounded border px-3 py-2">
+          </label>
+          <label>Texto alt imagen
+            <input name="imageAlt" class="mt-1 w-full rounded border px-3 py-2">
+          </label>
+          <label>Duración
+            <select name="duration" required class="mt-1 w-full rounded border px-3 py-2">
+              <option value="poco">poco</option>
+              <option value="medio">medio</option>
+              <option value="mucho">mucho</option>
+            </select>
+          </label>
+          <label>Fase (coma: idea,diseño,producto)
+            <input name="phase" required class="mt-1 w-full rounded border px-3 py-2" placeholder="idea,diseño">
+          </label>
+          <label>Categoría
+            <select name="category" required class="mt-1 w-full rounded border px-3 py-2">
+              <option value="cuestionarios">cuestionarios</option>
+              <option value="observacion">observacion</option>
+              <option value="opiniones">opiniones</option>
+            </select>
+          </label>
+          <div class="sm:col-span-2 flex gap-3 pt-2">
+            <button type="submit" class="rounded-lg bg-indigo-600 text-white font-semibold px-5 py-2 hover:bg-indigo-700">Guardar</button>
+            <button type="button" id="btn-cancel" class="rounded-lg border px-5 py-2 hover:bg-slate-50">Cancelar</button>
+          </div>
+        </form>
+        <p id="form-msg" class="mt-3 text-sm hidden"></p>
+      </section>
+    </section>
+  </main>
+
+  <script>
+    (function () {
+      let authHeader = sessionStorage.getItem('ipo_auth');
+      const loginPanel = document.getElementById('login-panel');
+      const adminPanel = document.getElementById('admin-panel');
+      const listEl = document.getElementById('technique-list');
+      const editor = document.getElementById('editor');
+      const form = document.getElementById('technique-form');
+      let editingId = null;
+
+      function headers() {
+        return { 'Content-Type': 'application/json', 'Authorization': authHeader };
+      }
+
+      function showAdmin() {
+        loginPanel.classList.add('hidden');
+        adminPanel.classList.remove('hidden');
+        loadList();
+      }
+
+      if (authHeader) showAdmin();
+
+      document.getElementById('login-form').addEventListener('submit', async function (e) {
+        e.preventDefault();
+        const user = document.getElementById('login-user').value;
+        const pass = document.getElementById('login-pass').value;
+        authHeader = 'Basic ' + btoa(user + ':' + pass);
+        const res = await fetch('/api/techniques', {
+          method: 'POST',
+          headers: headers(),
+          body: '{}'
+        });
+        if (res.status === 401) {
+          document.getElementById('login-error').textContent = 'Credenciales incorrectas.';
+          document.getElementById('login-error').classList.remove('hidden');
+          authHeader = null;
+          return;
+        }
+        sessionStorage.setItem('ipo_auth', authHeader);
+        document.getElementById('login-error').classList.add('hidden');
+        showAdmin();
+      });
+
+      async function loadList() {
+        const res = await fetch('/api/techniques');
+        const data = await res.json();
+        listEl.innerHTML = data.map(function (t) {
+          return '<div class="flex flex-wrap items-center justify-between gap-2 rounded-lg bg-white border p-4">' +
+            '<div><strong>' + escapeHtml(t.name) + '</strong><span class="text-slate-500 text-xs ml-2">' + escapeHtml(t.id) + '</span></div>' +
+            '<div class="flex gap-2">' +
+            '<button type="button" data-edit="' + escapeHtml(t.id) + '" class="text-sm text-indigo-600 font-medium hover:underline">Editar</button>' +
+            '<button type="button" data-del="' + escapeHtml(t.id) + '" class="text-sm text-red-600 font-medium hover:underline">Eliminar</button>' +
+            '</div></div>';
+        }).join('');
+        listEl.querySelectorAll('[data-edit]').forEach(function (btn) {
+          btn.addEventListener('click', function () { openEdit(btn.getAttribute('data-edit')); });
+        });
+        listEl.querySelectorAll('[data-del]').forEach(function (btn) {
+          btn.addEventListener('click', function () { removeTech(btn.getAttribute('data-del')); });
+        });
+      }
+
+      function escapeHtml(s) {
+        const d = document.createElement('div');
+        d.textContent = s;
+        return d.innerHTML;
+      }
+
+      function openNew() {
+        editingId = null;
+        document.getElementById('editor-title').textContent = 'Nueva técnica';
+        form.reset();
+        form.elements['id'].disabled = false;
+        editor.classList.remove('hidden');
+      }
+
+      async function openEdit(id) {
+        const res = await fetch('/api/techniques/' + id);
+        const t = await res.json();
+        editingId = id;
+        document.getElementById('editor-title').textContent = 'Editar: ' + t.name;
+        form.elements['id'].value = t.id;
+        form.elements['id'].disabled = true;
+        form.elements['name'].value = t.name;
+        form.elements['introduction'].value = t.introduction || '';
+        form.elements['objective'].value = t.objective;
+        form.elements['lifecycle'].value = t.lifecycle;
+        form.elements['methodType'].value = t.methodType;
+        form.elements['qualQuant'].value = t.qualQuant;
+        form.elements['requirements'].value = t.requirements;
+        form.elements['imageAlt'].value = t.imageAlt || '';
+        form.elements['duration'].value = t.duration;
+        form.elements['phase'].value = t.phase;
+        form.elements['category'].value = t.category;
+        editor.classList.remove('hidden');
+      }
+
+      function formToJSON() {
+        return {
+          id: form.elements['id'].value.trim(),
+          name: form.elements['name'].value.trim(),
+          introduction: form.elements['introduction'].value.trim(),
+          objective: form.elements['objective'].value.trim(),
+          lifecycle: form.elements['lifecycle'].value.trim(),
+          methodType: form.elements['methodType'].value.trim(),
+          qualQuant: form.elements['qualQuant'].value.trim(),
+          requirements: form.elements['requirements'].value.trim(),
+          imageAlt: form.elements['imageAlt'].value.trim() || form.elements['name'].value.trim(),
+          duration: form.elements['duration'].value,
+          phase: form.elements['phase'].value.trim(),
+          category: form.elements['category'].value
+        };
+      }
+
+      form.addEventListener('submit', async function (e) {
+        e.preventDefault();
+        const body = formToJSON();
+        const msg = document.getElementById('form-msg');
+        let res;
+        if (editingId) {
+          res = await fetch('/api/techniques/' + editingId, { method: 'PUT', headers: headers(), body: JSON.stringify(body) });
+        } else {
+          res = await fetch('/api/techniques', { method: 'POST', headers: headers(), body: JSON.stringify(body) });
+        }
+        if (!res.ok) {
+          const err = await res.json();
+          msg.textContent = err.error || 'Error al guardar';
+          msg.className = 'mt-3 text-sm text-red-600';
+          msg.classList.remove('hidden');
+          return;
+        }
+        msg.textContent = 'Guardado correctamente. Recarga la página pública para ver cambios.';
+        msg.className = 'mt-3 text-sm text-teal-700';
+        msg.classList.remove('hidden');
+        editor.classList.add('hidden');
+        loadList();
+      });
+
+      async function removeTech(id) {
+        if (!confirm('¿Eliminar técnica "' + id + '"?')) return;
+        const res = await fetch('/api/techniques/' + id, { method: 'DELETE', headers: headers() });
+        if (res.ok) loadList();
+        else alert('No se pudo eliminar');
+      }
+
+      document.getElementById('btn-new').addEventListener('click', openNew);
+      document.getElementById('btn-cancel').addEventListener('click', function () { editor.classList.add('hidden'); });
+    })();
+  </script>
+</body>
+</html>

@@ -1,3 +1,6 @@
+# Local data (optional: remove line to version techniques.json)
+# data/techniques.json
+
 # Binaries
 *.exe
 *.exe~

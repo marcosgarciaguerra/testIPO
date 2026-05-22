@@ -17,8 +17,8 @@ func apiError(w http.ResponseWriter, status int, msg string) {
 	writeJSON(w, status, map[string]string{"error": msg})
 }
 
-func apiTechniquesHandler(store *TechniqueStore) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
+func apiTechniquesHandler(store *TechniqueStore, limiter *ipLimiter) http.HandlerFunc {
+	return rateLimitWrites(func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodGet:
 			writeJSON(w, http.StatusOK, store.List())
@@ -42,11 +42,11 @@ func apiTechniquesHandler(store *TechniqueStore) http.HandlerFunc {
 		default:
 			apiError(w, http.StatusMethodNotAllowed, "método no permitido")
 		}
-	}
+	}, limiter)
 }
 
-func apiTechniqueByIDHandler(store *TechniqueStore) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
+func apiTechniqueByIDHandler(store *TechniqueStore, limiter *ipLimiter) http.HandlerFunc {
+	return rateLimitWrites(func(w http.ResponseWriter, r *http.Request) {
 		id := strings.TrimPrefix(r.URL.Path, "/api/techniques/")
 		if id == "" || strings.Contains(id, "/") {
 			apiError(w, http.StatusBadRequest, "id requerido")
@@ -92,5 +92,5 @@ func apiTechniqueByIDHandler(store *TechniqueStore) http.HandlerFunc {
 		default:
 			apiError(w, http.StatusMethodNotAllowed, "método no permitido")
 		}
-	}
+	}, limiter)
 }

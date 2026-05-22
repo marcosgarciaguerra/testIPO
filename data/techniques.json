@@ -9,6 +9,13 @@
     "qualQuant": "Cualitativo",
     "requirements": "1 a 2 horas, 3–5 evaluadores expertos.",
     "imageAlt": "Evaluación heurística de usabilidad",
+    "imageURL": "/static/images/heuristica.svg",
+    "howTo": [
+      "Selecciona 3–5 evaluadores con conocimiento de usabilidad.",
+      "Define el alcance (pantallas o flujos a revisar).",
+      "Cada evaluador recorre el sistema y anota problemas según heurísticas.",
+      "Consolidad hallazgos y priorizad por severidad."
+    ],
     "duration": "poco",
     "phase": "idea,diseño,producto",
     "category": "observacion"
@@ -23,6 +30,13 @@
     "qualQuant": "Cualitativo y cuantitativo",
     "requirements": "15 a 30 usuarios representativos.",
     "imageAlt": "Card sorting para arquitectura de información",
+    "imageURL": "/static/images/card-sorting.svg",
+    "howTo": [
+      "Prepara tarjetas con conceptos o etiquetas del producto.",
+      "Recluta usuarios representativos del público objetivo.",
+      "Pide que agrupen tarjetas y nombren cada categoría.",
+      "Analiza patrones para proponer la arquitectura de información."
+    ],
     "duration": "mucho",
     "phase": "idea",
     "category": "opiniones"
@@ -37,6 +51,13 @@
     "qualQuant": "Cuantitativo",
     "requirements": "Menos de 5 minutos.",
     "imageAlt": "Test de los cinco segundos",
+    "imageURL": "/static/images/cinco-segundos.svg",
+    "howTo": [
+      "Muestra el diseño o mockup durante 5 segundos.",
+      "Oculta la pantalla y pregunta qué recuerda el usuario.",
+      "Registra si comunicó el propósito principal.",
+      "Repite con varios participantes y compara respuestas."
+    ],
     "duration": "poco",
     "phase": "diseño",
     "category": "observacion"
@@ -51,6 +72,13 @@
     "qualQuant": "Cualitativo",
     "requirements": "30–45 minutos, 5–8 usuarios.",
     "imageAlt": "Protocolo think aloud",
+    "imageURL": "/static/images/think-aloud.svg",
+    "howTo": [
+      "Define tareas concretas a realizar en el sistema.",
+      "Pide al usuario que verbalice todo lo que piensa mientras actúa.",
+      "Graba sesión (con consentimiento) o toma notas.",
+      "Identifica puntos de fricción y malentendidos."
+    ],
     "duration": "medio",
     "phase": "diseño",
     "category": "observacion"
@@ -65,6 +93,13 @@
     "qualQuant": "Cuantitativo",
     "requirements": "2 a 5 minutos, idealmente más de 30 usuarios.",
     "imageAlt": "Cuestionario SUS de usabilidad",
+    "imageURL": "/static/images/sus.svg",
+    "howTo": [
+      "Aplica el cuestionario SUS estándar de 10 ítems tras usar el producto.",
+      "Calcula la puntuación según la fórmula oficial (0–100).",
+      "Compara resultados entre versiones o con la media del sector (~68).",
+      "Complementa con preguntas abiertas si necesitas contexto."
+    ],
     "duration": "poco",
     "phase": "producto",
     "category": "cuestionarios"

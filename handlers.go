@@ -9,10 +9,11 @@ import (
 )
 
 type PageData struct {
-	Techniques []Technique
+	Title string
 }
 
 type DetailData struct {
+	Title     string
 	Technique Technique
 }
 
@@ -29,10 +30,18 @@ func initialLetter(s string) string {
 
 func loadTemplates() error {
 	funcMap := template.FuncMap{
-		"initial": initialLetter,
+		"initial":        initialLetter,
+		"labelDuration":  labelDuration,
+		"labelCategory":  labelCategory,
+		"labelPhase":     labelPhase,
+		"labelPhasesCSV": labelPhasesCSV,
 	}
 	var err error
 	templates, err = template.New("").Funcs(funcMap).ParseGlob("templates/*.html")
+	if err != nil {
+		return err
+	}
+	_, err = templates.ParseGlob("templates/partials/*.html")
 	return err
 }
 
@@ -42,7 +51,7 @@ func homeHandler(store *TechniqueStore) http.HandlerFunc {
 			http.NotFound(w, r)
 			return
 		}
-		if err := templates.ExecuteTemplate(w, "index.html", PageData{Techniques: store.List()}); err != nil {
+		if err := templates.ExecuteTemplate(w, "index.html", PageData{Title: "Técnicas de Usabilidad"}); err != nil {
 			log.Println("index template:", err)
 			http.Error(w, "Error interno", http.StatusInternalServerError)
 		}
@@ -61,7 +70,13 @@ func detailHandler(store *TechniqueStore) http.HandlerFunc {
 			http.NotFound(w, r)
 			return
 		}
-		if err := templates.ExecuteTemplate(w, "detail.html", DetailData{Technique: t}); err != nil {
+		if t.ImageURL == "" {
+			t.ImageURL = "/static/images/" + id + ".svg"
+		}
+		if err := templates.ExecuteTemplate(w, "detail.html", DetailData{
+			Title:     t.Name + " · Técnicas de Usabilidad",
+			Technique: t,
+		}); err != nil {
 			log.Println("detail template:", err)
 			http.Error(w, "Error interno", http.StatusInternalServerError)
 		}
@@ -73,19 +88,19 @@ func adminPageHandler(w http.ResponseWriter, r *http.Request) {
 		http.NotFound(w, r)
 		return
 	}
-	if err := templates.ExecuteTemplate(w, "admin.html", nil); err != nil {
+	if err := templates.ExecuteTemplate(w, "admin.html", PageData{Title: "Administración · Técnicas"}); err != nil {
 		log.Println("admin template:", err)
 		http.Error(w, "Error interno", http.StatusInternalServerError)
 	}
 }
 
-func routeAPI(w http.ResponseWriter, r *http.Request, store *TechniqueStore) {
+func routeAPI(w http.ResponseWriter, r *http.Request, store *TechniqueStore, limiter *ipLimiter) {
 	if r.URL.Path == "/api/techniques" {
-		apiTechniquesHandler(store)(w, r)
+		apiTechniquesHandler(store, limiter)(w, r)
 		return
 	}
 	if strings.HasPrefix(r.URL.Path, "/api/techniques/") {
-		apiTechniqueByIDHandler(store)(w, r)
+		apiTechniqueByIDHandler(store, limiter)(w, r)
 		return
 	}
 	http.NotFound(w, r)

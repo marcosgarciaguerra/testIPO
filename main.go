@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"net/http"
+	"os"
 	"strings"
 )
 
@@ -16,7 +17,9 @@ func main() {
 		log.Fatal("store:", err)
 	}
 
+	limiter := newIPLimiter()
 	mux := http.NewServeMux()
+	mux.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 	mux.HandleFunc("/", homeHandler(store))
 	mux.HandleFunc("/tecnicas/", detailHandler(store))
 	mux.HandleFunc("/admin", adminPageHandler)
@@ -25,11 +28,15 @@ func main() {
 			http.NotFound(w, r)
 			return
 		}
-		routeAPI(w, r, store)
+		routeAPI(w, r, store, limiter)
 	})
 
-	log.Println("Servidor en http://localhost:8080")
-	log.Println("Admin UI: http://localhost:8080/admin (adminipo / adminn)")
-	log.Println("API: GET/POST /api/techniques · GET/PUT/DELETE /api/techniques/{id}")
-	log.Fatal(http.ListenAndServe(":8080", mux))
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+	addr := ":" + port
+	log.Println("Servidor en http://localhost" + addr)
+	log.Println("Admin: http://localhost" + addr + "/admin (ADMIN_USER / ADMIN_PASS env)")
+	log.Fatal(http.ListenAndServe(addr, mux))
 }

@@ -8,7 +8,7 @@ import (
 	"sync"
 )
 
-const techniquesFile = "data/techniques.json"
+var techniquesFile = "data/techniques.json"
 
 var (
 	errNotFound      = errors.New("technique not found")
@@ -33,6 +33,13 @@ func defaultTechniques() []Technique {
 			QualQuant:    "Cualitativo",
 			Requirements: "1 a 2 horas, 3–5 evaluadores expertos.",
 			ImageAlt:     "Evaluación heurística de usabilidad",
+			ImageURL:     "/static/images/heuristica.svg",
+			HowTo: []string{
+				"Selecciona 3–5 evaluadores con conocimiento de usabilidad.",
+				"Define el alcance (pantallas o flujos a revisar).",
+				"Cada evaluador recorre el sistema y anota problemas según heurísticas.",
+				"Consolidad hallazgos y priorizad por severidad.",
+			},
 			Duration:     "poco",
 			Phase:        "idea,diseño,producto",
 			Category:     "observacion",
@@ -47,6 +54,13 @@ func defaultTechniques() []Technique {
 			QualQuant:    "Cualitativo y cuantitativo",
 			Requirements: "15 a 30 usuarios representativos.",
 			ImageAlt:     "Card sorting para arquitectura de información",
+			ImageURL:     "/static/images/card-sorting.svg",
+			HowTo: []string{
+				"Prepara tarjetas con conceptos o etiquetas del producto.",
+				"Recluta usuarios representativos del público objetivo.",
+				"Pide que agrupen tarjetas y nombren cada categoría.",
+				"Analiza patrones para proponer la arquitectura de información.",
+			},
 			Duration:     "mucho",
 			Phase:        "idea",
 			Category:     "opiniones",
@@ -61,6 +75,13 @@ func defaultTechniques() []Technique {
 			QualQuant:    "Cuantitativo",
 			Requirements: "Menos de 5 minutos.",
 			ImageAlt:     "Test de los cinco segundos",
+			ImageURL:     "/static/images/cinco-segundos.svg",
+			HowTo: []string{
+				"Muestra el diseño o mockup durante 5 segundos.",
+				"Oculta la pantalla y pregunta qué recuerda el usuario.",
+				"Registra si comunicó el propósito principal.",
+				"Repite con varios participantes y compara respuestas.",
+			},
 			Duration:     "poco",
 			Phase:        "diseño",
 			Category:     "observacion",
@@ -75,6 +96,13 @@ func defaultTechniques() []Technique {
 			QualQuant:    "Cualitativo",
 			Requirements: "30–45 minutos, 5–8 usuarios.",
 			ImageAlt:     "Protocolo think aloud",
+			ImageURL:     "/static/images/think-aloud.svg",
+			HowTo: []string{
+				"Define tareas concretas a realizar en el sistema.",
+				"Pide al usuario que verbalice todo lo que piensa mientras actúa.",
+				"Graba sesión (con consentimiento) o toma notas.",
+				"Identifica puntos de fricción y malentendidos.",
+			},
 			Duration:     "medio",
 			Phase:        "diseño",
 			Category:     "observacion",
@@ -89,6 +117,13 @@ func defaultTechniques() []Technique {
 			QualQuant:    "Cuantitativo",
 			Requirements: "2 a 5 minutos, idealmente más de 30 usuarios.",
 			ImageAlt:     "Cuestionario SUS de usabilidad",
+			ImageURL:     "/static/images/sus.svg",
+			HowTo: []string{
+				"Aplica el cuestionario SUS estándar de 10 ítems tras usar el producto.",
+				"Calcula la puntuación según la fórmula oficial (0–100).",
+				"Compara resultados entre versiones o con la media del sector (~68).",
+				"Complementa con preguntas abiertas si necesitas contexto.",
+			},
 			Duration:     "poco",
 			Phase:        "producto",
 			Category:     "cuestionarios",
@@ -124,8 +159,32 @@ func (s *TechniqueStore) load() error {
 		s.techniques = defaultTechniques()
 		return s.persist()
 	}
-	s.techniques = list
+	s.techniques = enrichTechniques(list)
 	return nil
+}
+
+func enrichTechniques(list []Technique) []Technique {
+	defaults := make(map[string]Technique)
+	for _, d := range defaultTechniques() {
+		defaults[d.ID] = d
+	}
+	for i, t := range list {
+		if d, ok := defaults[t.ID]; ok {
+			if t.Introduction == "" {
+				list[i].Introduction = d.Introduction
+			}
+			if t.ImageURL == "" {
+				list[i].ImageURL = d.ImageURL
+			}
+			if len(t.HowTo) == 0 {
+				list[i].HowTo = d.HowTo
+			}
+		}
+		if list[i].ImageURL == "" {
+			list[i].ImageURL = "/static/images/" + list[i].ID + ".svg"
+		}
+	}
+	return list
 }
 
 func (s *TechniqueStore) persist() error {

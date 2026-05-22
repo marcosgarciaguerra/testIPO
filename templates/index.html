@@ -1,10 +1,7 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Técnicas de Usabilidad</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  {{template "head" .}}
 </head>
 <body class="bg-slate-50 text-slate-800 antialiased">
 
@@ -18,6 +15,8 @@
       <section class="mt-10 p-6 sm:p-8 rounded-2xl bg-white/10 backdrop-blur border border-white/20" aria-labelledby="wizard-heading">
         <h2 id="wizard-heading" class="text-xl sm:text-2xl font-semibold">¿No sabes por dónde empezar?</h2>
         <p class="mt-2 text-indigo-100 text-sm sm:text-base">Responde las tres preguntas paso a paso y te guiamos a una técnica.</p>
+
+        <div id="wizard-banner" class="hidden mt-4 rounded-lg px-4 py-3 text-sm" role="alert"></div>
 
         <div class="mt-4 flex gap-2" aria-hidden="true">
           <span id="wiz-dot-1" class="h-2 flex-1 rounded-full bg-teal-400"></span>
@@ -59,6 +58,7 @@
           <button type="button" id="wizard-prev" class="hidden rounded-lg border border-white/40 px-4 py-2.5 text-sm font-semibold hover:bg-white/10 focus:ring-2 focus:ring-teal-300">Anterior</button>
           <button type="button" id="wizard-next" class="rounded-lg bg-teal-500 hover:bg-teal-400 text-white font-semibold px-5 py-2.5 text-sm focus:ring-2 focus:ring-teal-300">Siguiente</button>
           <button type="button" id="wizard-submit" class="hidden rounded-lg bg-white text-indigo-900 font-semibold px-5 py-2.5 text-sm hover:bg-indigo-50 focus:ring-2 focus:ring-white">Recomendar técnica</button>
+          <button type="button" id="wizard-restart" class="hidden rounded-lg text-indigo-100 text-sm underline hover:text-white">Reiniciar cuestionario</button>
         </div>
       </section>
     </div>
@@ -71,6 +71,8 @@
       <label for="search" class="sr-only">Buscar técnicas</label>
       <input type="search" id="search" placeholder="Buscar por nombre o objetivo…"
         class="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm shadow-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 outline-none">
+
+      <div id="active-filters" class="hidden mt-3 flex flex-wrap gap-2" aria-live="polite"></div>
 
       <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-6">
         <fieldset>
@@ -103,65 +105,21 @@
       </div>
 
       <div class="mt-4 flex flex-wrap items-center justify-between gap-3">
-        <p id="result-count" class="text-sm text-slate-600" aria-live="polite">Mostrando {{ len .Techniques }} de {{ len .Techniques }} técnicas</p>
+        <p id="result-count" class="text-sm text-slate-600" aria-live="polite">Cargando técnicas…</p>
         <button type="button" id="clear-filters" class="text-sm font-medium text-indigo-600 hover:text-indigo-800 focus:underline">Limpiar filtros</button>
       </div>
     </section>
+
+    <p id="cards-loading" class="text-center py-8 text-slate-500" role="status">Cargando técnicas…</p>
 
     <p id="empty-state" class="hidden text-center py-16 text-slate-500" role="status">
       No hay técnicas que coincidan con tu búsqueda o filtros.
     </p>
 
-    <section id="cards-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" aria-label="Listado de técnicas">
-      {{ range .Techniques }}
-      <article
-        id="card-{{ .ID }}"
-        class="technique-card flex flex-col rounded-xl bg-white shadow-md border border-slate-200 overflow-hidden transition hover:shadow-lg hover:-translate-y-0.5"
-        data-id="{{ .ID }}"
-        data-duration="{{ .Duration }}"
-        data-phase="{{ .Phase }}"
-        data-category="{{ .Category }}"
-        data-introduction="{{ .Introduction }}"
-        data-search="{{ .Name }} {{ .Objective }} {{ .Introduction }} {{ .Lifecycle }} {{ .MethodType }} {{ .QualQuant }}"
-      >
-        <div class="aspect-[5/3] bg-gradient-to-br from-slate-200 to-slate-300 flex items-center justify-center" role="img" aria-label="{{ .ImageAlt }}">
-          <span class="text-4xl font-bold text-slate-400/80 select-none" aria-hidden="true">{{ initial .Name }}</span>
-        </div>
-        <div class="relative flex flex-col flex-1 p-5">
-          <h3 class="text-lg font-bold text-slate-900">{{ .Name }}</h3>
-
-          <p
-            class="objective-focus mt-2 text-sm text-slate-600 line-clamp-3 flex-1 rounded-md outline-none focus:ring-2 focus:ring-indigo-400 focus:bg-indigo-50/50 cursor-help"
-            tabindex="0"
-            role="button"
-            aria-label="Objetivo de {{ .Name }}. Pulsa para ver introducción."
-            data-intro-target="intro-{{ .ID }}"
-          >{{ .Objective }}</p>
-
-          <div
-            id="intro-{{ .ID }}"
-            class="intro-popover hidden absolute left-5 right-5 top-full z-30 mt-1 rounded-lg border border-indigo-200 bg-white p-4 text-sm text-slate-700 shadow-xl"
-            role="tooltip"
-          >
-            <p class="font-semibold text-indigo-800 text-xs uppercase tracking-wide mb-1">Introducción</p>
-            <p>{{ .Introduction }}</p>
-          </div>
-
-          <a href="/tecnicas/{{ .ID }}"
-            class="mt-4 w-full text-center rounded-lg border border-indigo-200 bg-indigo-50 text-indigo-700 font-semibold text-sm py-2.5 hover:bg-indigo-100 transition focus:outline-none focus:ring-2 focus:ring-indigo-500">
-            Ver más
-          </a>
-        </div>
-      </article>
-      {{ end }}
-    </section>
+    <section id="cards-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" aria-label="Listado de técnicas"></section>
   </main>
 
-  <footer class="border-t border-slate-200 bg-white mt-12">
-    <p class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 text-center text-sm text-slate-500">
-      IPO · <a href="/admin" class="text-indigo-600 hover:underline">Administración</a>
-    </p>
-  </footer>
+  {{template "footer-public" .}}
 
   <div id="wizard-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="modal-title">
     <div class="absolute inset-0 bg-slate-900/60" data-close-modal></div>
@@ -169,7 +127,9 @@
       <h2 id="modal-title" class="text-xl font-bold text-slate-900">Tu técnica recomendada</h2>
       <p class="mt-1 text-sm text-slate-500">Según tus respuestas en el cuestionario:</p>
       <p id="modal-technique-name" class="mt-4 text-lg font-semibold text-indigo-700"></p>
+      <p id="modal-match-reasons" class="mt-2 text-sm font-medium text-teal-700"></p>
       <p id="modal-technique-intro" class="mt-2 text-sm text-slate-600"></p>
+      <p id="modal-second-choice" class="hidden mt-2 text-xs text-slate-500 italic"></p>
       <div class="mt-6 flex flex-col sm:flex-row gap-3">
         <a id="modal-detail-link" href="#" class="flex-1 text-center rounded-lg bg-indigo-600 text-white font-semibold py-2.5 text-sm hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500">Ver ficha completa</a>
         <button type="button" id="modal-go-card" class="flex-1 rounded-lg border border-indigo-200 text-indigo-700 font-semibold py-2.5 text-sm hover:bg-indigo-50">Ver en la lista</button>
@@ -178,213 +138,6 @@
     </div>
   </div>
 
-  <script>
-    (function () {
-      const cards = Array.from(document.querySelectorAll('.technique-card'));
-      let TOTAL = cards.length;
-      const searchInput = document.getElementById('search');
-      const resultCount = document.getElementById('result-count');
-      const emptyState = document.getElementById('empty-state');
-      const cardsGrid = document.getElementById('cards-grid');
-
-      function getFilter(name) {
-        const el = document.querySelector('input[name="' + name + '"]:checked');
-        return el ? el.value : '';
-      }
-
-      function cardMatchesPhase(card, phaseFilter) {
-        if (!phaseFilter) return true;
-        return (card.dataset.phase || '').split(',').includes(phaseFilter);
-      }
-
-      function cardVisible(card) {
-        const q = (searchInput.value || '').trim().toLowerCase();
-        const duration = getFilter('duration');
-        const phase = getFilter('phase');
-        const category = getFilter('category');
-        if (duration && card.dataset.duration !== duration) return false;
-        if (!cardMatchesPhase(card, phase)) return false;
-        if (category && card.dataset.category !== category) return false;
-        if (q && !(card.dataset.search || '').toLowerCase().includes(q)) return false;
-        return true;
-      }
-
-      function applyFilters() {
-        let visible = 0;
-        cards.forEach(function (card) {
-          const show = cardVisible(card);
-          card.classList.toggle('hidden', !show);
-          if (show) visible++;
-        });
-        emptyState.classList.toggle('hidden', visible > 0);
-        cardsGrid.classList.toggle('hidden', visible === 0);
-        resultCount.textContent = 'Mostrando ' + visible + ' de ' + TOTAL + ' técnicas';
-      }
-
-      function setFilters(duration, phase, category) {
-        ['duration', 'phase', 'category'].forEach(function (name) {
-          const val = name === 'duration' ? duration : name === 'phase' ? phase : category;
-          document.querySelectorAll('input[name="' + name + '"]').forEach(function (input) {
-            input.checked = input.value === (val || '');
-          });
-        });
-        applyFilters();
-      }
-
-      document.querySelectorAll('input[name="duration"], input[name="phase"], input[name="category"]').forEach(function (el) {
-        el.addEventListener('change', applyFilters);
-      });
-      searchInput.addEventListener('input', applyFilters);
-      document.getElementById('clear-filters').addEventListener('click', function () {
-        searchInput.value = '';
-        setFilters('', '', '');
-      });
-
-      function hideAllPopovers() {
-        document.querySelectorAll('.intro-popover').forEach(function (p) { p.classList.add('hidden'); });
-      }
-
-      document.querySelectorAll('.objective-focus').forEach(function (el) {
-        el.addEventListener('focus', function () {
-          hideAllPopovers();
-          const pop = document.getElementById(el.getAttribute('data-intro-target'));
-          if (pop) pop.classList.remove('hidden');
-        });
-        el.addEventListener('blur', function () {
-          setTimeout(function () {
-            const pop = document.getElementById(el.getAttribute('data-intro-target'));
-            if (pop && !pop.matches(':hover') && !el.matches(':focus')) pop.classList.add('hidden');
-          }, 150);
-        });
-        el.addEventListener('keydown', function (e) {
-          if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault();
-            el.focus();
-            const pop = document.getElementById(el.getAttribute('data-intro-target'));
-            if (pop) pop.classList.toggle('hidden');
-          }
-        });
-      });
-
-      let wizStep = 1;
-      const wizSteps = document.querySelectorAll('.wizard-step');
-      const wizPrev = document.getElementById('wizard-prev');
-      const wizNext = document.getElementById('wizard-next');
-      const wizSubmit = document.getElementById('wizard-submit');
-      const wizDots = [1, 2, 3].map(function (n) { return document.getElementById('wiz-dot-' + n); });
-
-      function wizSelectForStep(step) {
-        if (step === 1) return document.getElementById('wizard-phase');
-        if (step === 2) return document.getElementById('wizard-duration');
-        return document.getElementById('wizard-category');
-      }
-
-      function updateWizardUI() {
-        wizSteps.forEach(function (s) {
-          s.classList.toggle('hidden', parseInt(s.dataset.step, 10) !== wizStep);
-        });
-        wizDots.forEach(function (d, i) {
-          d.classList.toggle('bg-teal-400', i + 1 <= wizStep);
-          d.classList.toggle('bg-white/30', i + 1 > wizStep);
-        });
-        wizPrev.classList.toggle('hidden', wizStep === 1);
-        wizNext.classList.toggle('hidden', wizStep === 3);
-        wizSubmit.classList.toggle('hidden', wizStep !== 3);
-      }
-
-      function validateCurrentStep() {
-        const sel = wizSelectForStep(wizStep);
-        if (!sel.value) {
-          alert('Selecciona una opción antes de continuar.');
-          sel.focus();
-          return false;
-        }
-        return true;
-      }
-
-      wizNext.addEventListener('click', function () {
-        if (!validateCurrentStep()) return;
-        if (wizStep < 3) { wizStep++; updateWizardUI(); }
-      });
-      wizPrev.addEventListener('click', function () {
-        if (wizStep > 1) { wizStep--; updateWizardUI(); }
-      });
-
-      function scoreCard(card, phase, duration, category) {
-        let score = 0;
-        if (phase && cardMatchesPhase(card, phase)) score += 3;
-        if (duration && card.dataset.duration === duration) score += 2;
-        if (category && card.dataset.category === category) score += 2;
-        return score;
-      }
-
-      function findBestMatch(phase, duration, category) {
-        let best = null;
-        let bestScore = -1;
-        cards.forEach(function (card) {
-          const s = scoreCard(card, phase, duration, category);
-          if (s > bestScore) { bestScore = s; best = card; }
-        });
-        return bestScore > 0 ? best : null;
-      }
-
-      const modal = document.getElementById('wizard-modal');
-      const modalName = document.getElementById('modal-technique-name');
-      const modalIntro = document.getElementById('modal-technique-intro');
-      const modalDetailLink = document.getElementById('modal-detail-link');
-      let recommendedId = null;
-
-      function openModal(card) {
-        recommendedId = card.dataset.id;
-        modalName.textContent = card.querySelector('h3').textContent;
-        modalIntro.textContent = card.dataset.introduction || card.querySelector('.objective-focus').textContent;
-        modalDetailLink.href = '/tecnicas/' + recommendedId;
-        modal.classList.remove('hidden');
-        document.body.classList.add('overflow-hidden');
-      }
-
-      function closeModal() {
-        modal.classList.add('hidden');
-        document.body.classList.remove('overflow-hidden');
-      }
-
-      document.querySelectorAll('[data-close-modal]').forEach(function (el) {
-        el.addEventListener('click', closeModal);
-      });
-
-      wizSubmit.addEventListener('click', function () {
-        if (!validateCurrentStep()) return;
-        const phase = document.getElementById('wizard-phase').value;
-        const duration = document.getElementById('wizard-duration').value;
-        const category = document.getElementById('wizard-category').value;
-        const match = findBestMatch(phase, duration, category);
-        if (!match) {
-          alert('No hay técnica que encaje con esa combinación. Prueba otras respuestas o explora el listado con filtros.');
-          return;
-        }
-        openModal(match);
-      });
-
-      document.getElementById('modal-go-card').addEventListener('click', function () {
-        if (!recommendedId) return;
-        setFilters(
-          document.getElementById('wizard-duration').value,
-          document.getElementById('wizard-phase').value,
-          document.getElementById('wizard-category').value
-        );
-        closeModal();
-        const card = document.getElementById('card-' + recommendedId);
-        if (card) {
-          card.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          card.classList.add('ring-2', 'ring-teal-500', 'ring-offset-2');
-          setTimeout(function () { card.classList.remove('ring-2', 'ring-teal-500', 'ring-offset-2'); }, 2500);
-        }
-      });
-
-      document.addEventListener('keydown', function (e) {
-        if (e.key === 'Escape' && !modal.classList.contains('hidden')) closeModal();
-      });
-    })();
-  </script>
+  <script src="/static/app.js"></script>
 </body>
 </html>

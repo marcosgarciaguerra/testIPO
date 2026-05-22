@@ -1,10 +1,7 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Administración · Técnicas</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  {{template "head" .}}
 </head>
 <body class="bg-slate-100 text-slate-800 antialiased min-h-screen">
 
@@ -12,9 +9,12 @@
     <div class="max-w-5xl mx-auto px-4 py-6 flex flex-wrap items-center justify-between gap-4">
       <div>
         <h1 class="text-xl font-bold">Administración de técnicas</h1>
-        <p class="text-sm text-indigo-200">API REST · usuario <code class="bg-white/10 px-1 rounded">adminipo</code></p>
+        <p class="text-sm text-indigo-200">API REST · credenciales vía <code class="bg-white/10 px-1 rounded">ADMIN_USER</code> / <code class="bg-white/10 px-1 rounded">ADMIN_PASS</code></p>
       </div>
-      <a href="/" class="text-sm text-indigo-200 hover:text-white">← Inicio público</a>
+      <div class="flex gap-4 text-sm">
+        <a id="link-public" href="/" target="_blank" rel="noopener" class="text-indigo-200 hover:text-white">Abrir web pública ↗</a>
+        <a href="/" class="text-indigo-200 hover:text-white">← Inicio</a>
+      </div>
     </div>
   </header>
 
@@ -25,19 +25,15 @@
       <form id="login-form" class="mt-4 space-y-3">
         <label class="block text-sm">
           <span class="font-medium">Usuario</span>
-          <input type="text" id="login-user" value="adminipo" required
-            class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500">
+          <input type="text" id="login-user" value="adminipo" required class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500">
         </label>
         <label class="block text-sm">
           <span class="font-medium">Contraseña</span>
-          <input type="password" id="login-pass" required
-            class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500">
+          <input type="password" id="login-pass" required class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500">
         </label>
-        <button type="submit" class="w-full rounded-lg bg-indigo-600 text-white font-semibold py-2.5 text-sm hover:bg-indigo-700">
-          Entrar
-        </button>
+        <button type="submit" class="w-full rounded-lg bg-indigo-600 text-white font-semibold py-2.5 text-sm hover:bg-indigo-700">Entrar</button>
       </form>
-      <p id="login-error" class="hidden mt-3 text-sm text-red-600"></p>
+      <p id="login-error" class="hidden mt-3 text-sm text-red-600 rounded-lg bg-red-50 px-3 py-2" role="alert"></p>
     </section>
 
     <section id="admin-panel" class="hidden space-y-6">
@@ -50,9 +46,9 @@
 
       <section id="editor" class="hidden rounded-xl bg-white border border-slate-200 p-6 shadow-sm">
         <h3 id="editor-title" class="font-semibold text-lg mb-4">Editar técnica</h3>
-        <form id="technique-form" class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+        <form id="technique-form" class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm" novalidate>
           <label class="sm:col-span-2">ID (slug)
-            <input name="id" required pattern="[a-z0-9-]+" class="mt-1 w-full rounded border px-3 py-2" placeholder="mi-tecnica">
+            <input name="id" required pattern="[a-z0-9-]+" class="mt-1 w-full rounded border px-3 py-2">
           </label>
           <label class="sm:col-span-2">Nombre
             <input name="name" required class="mt-1 w-full rounded border px-3 py-2">
@@ -62,6 +58,12 @@
           </label>
           <label class="sm:col-span-2">Objetivo
             <textarea name="objective" required rows="2" class="mt-1 w-full rounded border px-3 py-2"></textarea>
+          </label>
+          <label class="sm:col-span-2">Cómo ejecutarla (un paso por línea)
+            <textarea name="howTo" rows="4" class="mt-1 w-full rounded border px-3 py-2" placeholder="Paso 1&#10;Paso 2"></textarea>
+          </label>
+          <label class="sm:col-span-2">URL imagen
+            <input name="imageURL" class="mt-1 w-full rounded border px-3 py-2" placeholder="/static/images/mi-tecnica.svg">
           </label>
           <label>Ciclo de vida
             <input name="lifecycle" required class="mt-1 w-full rounded border px-3 py-2">
@@ -86,7 +88,7 @@
             </select>
           </label>
           <label>Fase (coma: idea,diseño,producto)
-            <input name="phase" required class="mt-1 w-full rounded border px-3 py-2" placeholder="idea,diseño">
+            <input name="phase" required class="mt-1 w-full rounded border px-3 py-2">
           </label>
           <label>Categoría
             <select name="category" required class="mt-1 w-full rounded border px-3 py-2">
@@ -100,7 +102,7 @@
             <button type="button" id="btn-cancel" class="rounded-lg border px-5 py-2 hover:bg-slate-50">Cancelar</button>
           </div>
         </form>
-        <p id="form-msg" class="mt-3 text-sm hidden"></p>
+        <p id="form-msg" class="mt-3 text-sm hidden rounded-lg px-3 py-2" role="status"></p>
       </section>
     </section>
   </main>
@@ -115,6 +117,16 @@
       const form = document.getElementById('technique-form');
       let editingId = null;
 
+      function updatePublicLink() {
+        document.getElementById('link-public').href = '/?t=' + Date.now();
+      }
+
+      function showMsg(el, text, ok) {
+        el.textContent = text;
+        el.className = 'mt-3 text-sm rounded-lg px-3 py-2 ' + (ok ? 'text-teal-800 bg-teal-50' : 'text-red-700 bg-red-50');
+        el.classList.remove('hidden');
+      }
+
       function headers() {
         return { 'Content-Type': 'application/json', 'Authorization': authHeader };
       }
@@ -122,6 +134,7 @@
       function showAdmin() {
         loginPanel.classList.add('hidden');
         adminPanel.classList.remove('hidden');
+        updatePublicLink();
         loadList();
       }
 
@@ -132,19 +145,15 @@
         const user = document.getElementById('login-user').value;
         const pass = document.getElementById('login-pass').value;
         authHeader = 'Basic ' + btoa(user + ':' + pass);
-        const res = await fetch('/api/techniques', {
-          method: 'POST',
-          headers: headers(),
-          body: '{}'
-        });
+        const res = await fetch('/api/techniques', { method: 'POST', headers: headers(), body: '{}' });
+        const errEl = document.getElementById('login-error');
         if (res.status === 401) {
-          document.getElementById('login-error').textContent = 'Credenciales incorrectas.';
-          document.getElementById('login-error').classList.remove('hidden');
+          showMsg(errEl, 'Credenciales incorrectas.', false);
           authHeader = null;
           return;
         }
         sessionStorage.setItem('ipo_auth', authHeader);
-        document.getElementById('login-error').classList.add('hidden');
+        errEl.classList.add('hidden');
         showAdmin();
       });
 
@@ -179,6 +188,7 @@
         form.reset();
         form.elements['id'].disabled = false;
         editor.classList.remove('hidden');
+        document.getElementById('form-msg').classList.add('hidden');
       }
 
       async function openEdit(id) {
@@ -191,6 +201,8 @@
         form.elements['name'].value = t.name;
         form.elements['introduction'].value = t.introduction || '';
         form.elements['objective'].value = t.objective;
+        form.elements['howTo'].value = (t.howTo || []).join('\n');
+        form.elements['imageURL'].value = t.imageURL || '';
         form.elements['lifecycle'].value = t.lifecycle;
         form.elements['methodType'].value = t.methodType;
         form.elements['qualQuant'].value = t.qualQuant;
@@ -203,8 +215,11 @@
       }
 
       function formToJSON() {
+        const howRaw = form.elements['howTo'].value.trim();
+        const howTo = howRaw ? howRaw.split('\n').map(function (s) { return s.trim(); }).filter(Boolean) : [];
+        const id = form.elements['id'].value.trim();
         return {
-          id: form.elements['id'].value.trim(),
+          id: id,
           name: form.elements['name'].value.trim(),
           introduction: form.elements['introduction'].value.trim(),
           objective: form.elements['objective'].value.trim(),
@@ -213,15 +228,28 @@
           qualQuant: form.elements['qualQuant'].value.trim(),
           requirements: form.elements['requirements'].value.trim(),
           imageAlt: form.elements['imageAlt'].value.trim() || form.elements['name'].value.trim(),
+          imageURL: form.elements['imageURL'].value.trim() || '/static/images/' + id + '.svg',
+          howTo: howTo,
           duration: form.elements['duration'].value,
           phase: form.elements['phase'].value.trim(),
           category: form.elements['category'].value
         };
       }
 
+      function validateForm() {
+        const msg = document.getElementById('form-msg');
+        const body = formToJSON();
+        if (!body.id || !body.name || !body.objective || !body.introduction) {
+          showMsg(msg, 'Completa ID, nombre, introducción y objetivo.', false);
+          return null;
+        }
+        return body;
+      }
+
       form.addEventListener('submit', async function (e) {
         e.preventDefault();
-        const body = formToJSON();
+        const body = validateForm();
+        if (!body) return;
         const msg = document.getElementById('form-msg');
         let res;
         if (editingId) {
@@ -231,14 +259,11 @@
         }
         if (!res.ok) {
           const err = await res.json();
-          msg.textContent = err.error || 'Error al guardar';
-          msg.className = 'mt-3 text-sm text-red-600';
-          msg.classList.remove('hidden');
+          showMsg(msg, err.error || 'Error al guardar', false);
           return;
         }
-        msg.textContent = 'Guardado correctamente. Recarga la página pública para ver cambios.';
-        msg.className = 'mt-3 text-sm text-teal-700';
-        msg.classList.remove('hidden');
+        showMsg(msg, 'Guardado. La web pública se actualiza al recargar el listado.', true);
+        updatePublicLink();
         editor.classList.add('hidden');
         loadList();
       });
@@ -246,8 +271,13 @@
       async function removeTech(id) {
         if (!confirm('¿Eliminar técnica "' + id + '"?')) return;
         const res = await fetch('/api/techniques/' + id, { method: 'DELETE', headers: headers() });
-        if (res.ok) loadList();
-        else alert('No se pudo eliminar');
+        const msg = document.getElementById('form-msg');
+        if (res.ok) {
+          loadList();
+          showMsg(msg, 'Técnica eliminada.', true);
+        } else {
+          showMsg(msg, 'No se pudo eliminar la técnica.', false);
+        }
       }
 
       document.getElementById('btn-new').addEventListener('click', openNew);

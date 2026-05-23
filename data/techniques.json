@@ -1,0 +1,117 @@
+[
+  {
+    "id": "heuristica",
+    "name": "Evaluación Heurística",
+    "introduction": "Revisión rápida por expertos con reglas de usabilidad (heurísticas de Nielsen). Ideal para detectar problemas obvios sin usuarios finales.",
+    "objective": "Expertos analizan el sistema según principios de usabilidad para predecir y detectar problemas evidentes.",
+    "lifecycle": "Desde diseño temprano hasta sistemas funcionales.",
+    "methodType": "Inspection method",
+    "qualQuant": "Cualitativo",
+    "requirements": "1 a 2 horas, 3–5 evaluadores expertos.",
+    "imageAlt": "Evaluación heurística de usabilidad",
+    "imageURL": "/static/images/heuristica.png",
+    "howTo": [
+      "Selecciona 3–5 evaluadores con conocimiento de usabilidad.",
+      "Define el alcance (pantallas o flujos a revisar).",
+      "Cada evaluador recorre el sistema y anota problemas según heurísticas.",
+      "Consolidad hallazgos y priorizad por severidad."
+    ],
+    "people": "2-3",
+    "modality": "presencial,online",
+    "tipo": "insight",
+    "duration": "1h",
+    "results": "cualitativos"
+  },
+  {
+    "id": "card-sorting",
+    "name": "Card Sorting",
+    "introduction": "Los usuarios agrupan conceptos en categorías. Sirve para diseñar menús, etiquetas y estructura de la información antes de programar.",
+    "objective": "Usuarios organizan tarjetas en categorías para mejorar la arquitectura de la información.",
+    "lifecycle": "Fase inicial de toma de requisitos.",
+    "methodType": "Inquiry method",
+    "qualQuant": "Cualitativo y cuantitativo",
+    "requirements": "15 a 30 usuarios representativos.",
+    "imageAlt": "Card sorting para arquitectura de información",
+    "imageURL": "/static/images/card-sorting.svg",
+    "howTo": [
+      "Prepara tarjetas con conceptos o etiquetas del producto.",
+      "Recluta usuarios representativos del público objetivo.",
+      "Pide que agrupen tarjetas y nombren cada categoría.",
+      "Analiza patrones para proponer la arquitectura de información."
+    ],
+    "people": "5+",
+    "modality": "presencial,online",
+    "tipo": "inquiry",
+    "duration": "1h+",
+    "results": "cualitativos,cuantitativos"
+  },
+  {
+    "id": "cinco-segundos",
+    "name": "Test de los 5 Segundos",
+    "introduction": "Muestras una pantalla unos segundos y preguntas qué recuerda el usuario. Comprueba si el propósito del diseño se entiende al instante.",
+    "objective": "Medir primeras impresiones para saber si el diseño comunica su propósito inmediatamente.",
+    "lifecycle": "Diseño visual y mockups.",
+    "methodType": "Inquiry method",
+    "qualQuant": "Cuantitativo",
+    "requirements": "Menos de 5 minutos.",
+    "imageAlt": "Test de los cinco segundos",
+    "imageURL": "/static/images/cinco-segundos.svg",
+    "howTo": [
+      "Muestra el diseño o mockup durante 5 segundos.",
+      "Oculta la pantalla y pregunta qué recuerda el usuario.",
+      "Registra si comunicó el propósito principal.",
+      "Repite con varios participantes y compara respuestas."
+    ],
+    "people": "5+",
+    "modality": "online",
+    "tipo": "inquiry",
+    "duration": "30min",
+    "results": "cuantitativos"
+  },
+  {
+    "id": "think-aloud",
+    "name": "Protocolo Think Aloud",
+    "introduction": "El usuario piensa en voz alta mientras usa la app. Revela confusiones y expectativas que no salen en una encuesta.",
+    "objective": "Usuarios utilizan el sistema mientras expresan en voz alta lo que piensan.",
+    "lifecycle": "Prototipos o primeras versiones funcionales.",
+    "methodType": "Testing method",
+    "qualQuant": "Cualitativo",
+    "requirements": "30–45 minutos, 5–8 usuarios.",
+    "imageAlt": "Protocolo think aloud",
+    "imageURL": "/static/images/think-aloud.svg",
+    "howTo": [
+      "Define tareas concretas a realizar en el sistema.",
+      "Pide al usuario que verbalice todo lo que piensa mientras actúa.",
+      "Graba sesión (con consentimiento) o toma notas.",
+      "Identifica puntos de fricción y malentendidos."
+    ],
+    "people": "5+",
+    "modality": "presencial",
+    "tipo": "testing",
+    "duration": "1h",
+    "results": "cualitativos"
+  },
+  {
+    "id": "sus",
+    "name": "Cuestionario SUS (System Usability Scale)",
+    "introduction": "Cuestionario estándar de 10 ítems con puntuación 0–100. Mide percepción global de usabilidad en productos ya usables.",
+    "objective": "Evaluar la percepción subjetiva y satisfacción mediante un cuestionario estandarizado.",
+    "lifecycle": "Pruebas funcionales o validación post-lanzamiento.",
+    "methodType": "Inquiry method",
+    "qualQuant": "Cuantitativo",
+    "requirements": "2 a 5 minutos, idealmente más de 30 usuarios.",
+    "imageAlt": "Cuestionario SUS de usabilidad",
+    "imageURL": "/static/images/sus.svg",
+    "howTo": [
+      "Aplica el cuestionario SUS estándar de 10 ítems tras usar el producto.",
+      "Calcula la puntuación según la fórmula oficial (0–100).",
+      "Compara resultados entre versiones o con la media del sector (~68).",
+      "Complementa con preguntas abiertas si necesitas contexto."
+    ],
+    "people": "5+",
+    "modality": "online",
+    "tipo": "inquiry",
+    "duration": "30min",
+    "results": "cuantitativos"
+  }
+]

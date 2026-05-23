@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 240" role="img">
+  <rect width="400" height="240" fill="#fce7f3"/>
+  <rect x="120" y="45" width="160" height="120" rx="12" fill="#ec4899"/>
+  <line x1="145" y1="75" x2="255" y2="75" stroke="#fff" stroke-width="6"/>
+  <line x1="145" y1="100" x2="255" y2="100" stroke="#fff" stroke-width="6"/>
+  <line x1="145" y1="125" x2="220" y2="125" stroke="#fff" stroke-width="6"/>
+  <text x="200" y="190" text-anchor="middle" fill="#9d174d" font-family="system-ui,sans-serif" font-size="18" font-weight="600">SUS</text>
+</svg>

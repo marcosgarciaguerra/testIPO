@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 240" role="img">
+  <rect width="400" height="240" fill="#e0e7ff"/>
+  <circle cx="200" cy="100" r="48" fill="#6366f1" opacity="0.9"/>
+  <path d="M170 100 L190 120 L230 80" stroke="#fff" stroke-width="8" fill="none" stroke-linecap="round"/>
+  <text x="200" y="190" text-anchor="middle" fill="#4338ca" font-family="system-ui,sans-serif" font-size="18" font-weight="600">Heurística</text>
+</svg>

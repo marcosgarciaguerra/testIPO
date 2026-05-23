@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  {{template "head" .}}
+</head>
+<body class="page-home text-stone-900 antialiased">
+
+  <header class="relative overflow-hidden bg-gradient-to-br from-brand-deep via-brand to-teal-600 text-white">
+    <div class="absolute inset-0 opacity-30" aria-hidden="true">
+      <div class="absolute -top-24 -right-24 h-72 w-72 rounded-full bg-white/10 blur-3xl"></div>
+      <div class="absolute bottom-0 left-1/4 h-48 w-48 rounded-full bg-accent/20 blur-2xl"></div>
+    </div>
+
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
+      <p class="text-xs font-bold uppercase tracking-[0.2em] text-teal-100/90">IPO · Guía para desarrolladores</p>
+      <h1 class="mt-3 text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white">Técnicas de Usabilidad</h1>
+      <p class="mt-4 text-lg sm:text-xl text-teal-50/95 max-w-2xl leading-relaxed">
+        Encuentra, filtra y aplica métodos de UX sin experiencia previa. Busca por nombre, objetivo o palabras clave.
+      </p>
+
+      <div class="search-hero mt-8" role="search">
+        <label for="search" class="sr-only">Buscar técnicas</label>
+        <svg class="search-hero-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+        </svg>
+        <input type="search" id="search" name="q" autocomplete="off"
+          placeholder="Buscar técnica… p. ej. heurística, encuesta, card sorting"
+          class="text-stone-900">
+        <p class="mt-2 text-sm text-teal-100/80 hidden sm:block">Filtra al instante · <kbd class="rounded bg-white/15 px-1.5 py-0.5 text-xs font-mono">/</kbd> enfoca · <kbd class="rounded bg-white/15 px-1.5 py-0.5 text-xs font-mono">Esc</kbd> borra</p>
+      </div>
+
+      <section class="mt-10 p-6 sm:p-8 rounded-2xl bg-white/10 backdrop-blur-md border border-white/25 shadow-xl" aria-labelledby="wizard-heading">
+        <h2 id="wizard-heading" class="text-xl sm:text-2xl font-bold">¿No sabes por dónde empezar?</h2>
+        <p class="mt-2 text-teal-50/90 text-sm sm:text-base">Responde tres preguntas y te recomendamos una técnica.</p>
+
+        <div id="wizard-banner" class="hidden mt-4 rounded-xl px-4 py-3 text-sm" role="alert"></div>
+
+        <div class="mt-4 flex gap-2" aria-hidden="true">
+          <span id="wiz-dot-1" class="h-2 flex-1 rounded-full bg-accent"></span>
+          <span id="wiz-dot-2" class="h-2 flex-1 rounded-full bg-white/25"></span>
+          <span id="wiz-dot-3" class="h-2 flex-1 rounded-full bg-white/25"></span>
+        </div>
+
+        <div id="wizard-panel" class="mt-6">
+          <div class="wizard-step" data-step="1">
+            <p class="text-sm font-semibold text-teal-100 mb-2">Pregunta 1 de 3 · Tipo</p>
+            <select id="wizard-tipo" class="w-full rounded-xl border-0 bg-white text-stone-800 px-3 py-2.5 text-sm font-medium focus:ring-2 focus:ring-accent">
+              <option value="">Selecciona…</option>
+              <option value="insight">Insight</option>
+              <option value="inquiry">Inquiry</option>
+              <option value="testing">Testing</option>
+            </select>
+          </div>
+          <div class="wizard-step hidden" data-step="2">
+            <p class="text-sm font-semibold text-teal-100 mb-2">Pregunta 2 de 3 · Duración</p>
+            <select id="wizard-duration" class="w-full rounded-xl border-0 bg-white text-stone-800 px-3 py-2.5 text-sm font-medium focus:ring-2 focus:ring-accent">
+              <option value="">Selecciona…</option>
+              <option value="30min">30 min</option>
+              <option value="1h">1h</option>
+              <option value="1h+">1h+</option>
+            </select>
+          </div>
+          <div class="wizard-step hidden" data-step="3">
+            <p class="text-sm font-semibold text-teal-100 mb-2">Pregunta 3 de 3 · Resultados</p>
+            <select id="wizard-results" class="w-full rounded-xl border-0 bg-white text-stone-800 px-3 py-2.5 text-sm font-medium focus:ring-2 focus:ring-accent">
+              <option value="">Selecciona…</option>
+              <option value="cuantitativos">Cuantitativos</option>
+              <option value="cualitativos">Cualitativos</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="mt-6 flex flex-wrap gap-3">
+          <button type="button" id="wizard-prev" class="hidden rounded-xl border border-white/40 px-4 py-2.5 text-sm font-semibold hover:bg-white/10 focus:ring-2 focus:ring-white/50">Anterior</button>
+          <button type="button" id="wizard-next" class="rounded-xl bg-accent hover:bg-orange-600 text-white font-bold px-5 py-2.5 text-sm shadow-md focus:ring-2 focus:ring-orange-300">Siguiente</button>
+          <button type="button" id="wizard-submit" class="hidden rounded-xl bg-white text-brand-deep font-bold px-5 py-2.5 text-sm hover:bg-teal-50 focus:ring-2 focus:ring-white">Recomendar técnica</button>
+          <button type="button" id="wizard-restart" class="hidden rounded-xl text-teal-100 text-sm font-medium underline hover:text-white">Reiniciar</button>
+        </div>
+      </section>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+
+    <section class="sticky top-0 z-20 -mx-4 px-4 sm:mx-0 sm:px-0 py-4 bg-surface/90 backdrop-blur-md border-b border-stone-200/80 mb-8 rounded-b-2xl sm:rounded-b-none" aria-labelledby="filters-heading">
+      <div class="flex flex-wrap items-end justify-between gap-3 mb-4">
+        <div>
+          <h2 id="filters-heading" class="text-lg font-bold text-stone-900">Filtrar catálogo</h2>
+          <p class="text-sm text-stone-500 mt-0.5">Combina filtros con la búsqueda del encabezado</p>
+        </div>
+        <a href="#search" class="sm:hidden text-sm font-semibold text-brand hover:text-brand-deep">↑ Buscar</a>
+      </div>
+
+      <div id="active-filters" class="hidden mb-4 flex flex-wrap gap-2" aria-live="polite"></div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+        <fieldset>
+          <legend class="text-sm font-bold text-stone-700 mb-2">N. personas</legend>
+          <div class="flex flex-wrap gap-2 filter-pill">
+            <label class="cursor-pointer"><input type="radio" name="people" value="" class="peer sr-only" checked><span>Todas</span></label>
+            <label class="cursor-pointer"><input type="radio" name="people" value="1" class="peer sr-only"><span>1</span></label>
+            <label class="cursor-pointer"><input type="radio" name="people" value="2-3" class="peer sr-only"><span>2-3</span></label>
+            <label class="cursor-pointer"><input type="radio" name="people" value="5+" class="peer sr-only"><span>5+</span></label>
+          </div>
+        </fieldset>
+        <fieldset>
+          <legend class="text-sm font-bold text-stone-700 mb-2">Modalidad</legend>
+          <div class="flex flex-wrap gap-2 filter-pill">
+            <label class="cursor-pointer"><input type="radio" name="modality" value="" class="peer sr-only" checked><span>Todas</span></label>
+            <label class="cursor-pointer"><input type="radio" name="modality" value="presencial" class="peer sr-only"><span>Presencial</span></label>
+            <label class="cursor-pointer"><input type="radio" name="modality" value="online" class="peer sr-only"><span>Online</span></label>
+          </div>
+        </fieldset>
+        <fieldset>
+          <legend class="text-sm font-bold text-stone-700 mb-2">Tipo</legend>
+          <div class="flex flex-wrap gap-2 filter-pill">
+            <label class="cursor-pointer"><input type="radio" name="tipo" value="" class="peer sr-only" checked><span>Todos</span></label>
+            <label class="cursor-pointer"><input type="radio" name="tipo" value="insight" class="peer sr-only"><span>Insight</span></label>
+            <label class="cursor-pointer"><input type="radio" name="tipo" value="inquiry" class="peer sr-only"><span>Inquiry</span></label>
+            <label class="cursor-pointer"><input type="radio" name="tipo" value="testing" class="peer sr-only"><span>Testing</span></label>
+          </div>
+        </fieldset>
+        <fieldset>
+          <legend class="text-sm font-bold text-stone-700 mb-2">Duración</legend>
+          <div class="flex flex-wrap gap-2 filter-pill">
+            <label class="cursor-pointer"><input type="radio" name="duration" value="" class="peer sr-only" checked><span>Todas</span></label>
+            <label class="cursor-pointer"><input type="radio" name="duration" value="30min" class="peer sr-only"><span>30 min</span></label>
+            <label class="cursor-pointer"><input type="radio" name="duration" value="1h" class="peer sr-only"><span>1h</span></label>
+            <label class="cursor-pointer"><input type="radio" name="duration" value="1h+" class="peer sr-only"><span>1h+</span></label>
+          </div>
+        </fieldset>
+        <fieldset>
+          <legend class="text-sm font-bold text-stone-700 mb-2">Resultados</legend>
+          <div class="flex flex-wrap gap-2 filter-pill">
+            <label class="cursor-pointer"><input type="radio" name="results" value="" class="peer sr-only" checked><span>Todos</span></label>
+            <label class="cursor-pointer"><input type="radio" name="results" value="cuantitativos" class="peer sr-only"><span>Cuantitativos</span></label>
+            <label class="cursor-pointer"><input type="radio" name="results" value="cualitativos" class="peer sr-only"><span>Cualitativos</span></label>
+          </div>
+        </fieldset>
+      </div>
+
+      <div class="mt-5 flex flex-wrap items-center justify-between gap-3 pt-4 border-t border-stone-200/80">
+        <p id="result-count" class="text-sm font-medium text-stone-600" aria-live="polite">Cargando técnicas…</p>
+        <button type="button" id="clear-filters" class="text-sm font-bold text-brand hover:text-brand-deep focus:underline">Limpiar todo</button>
+      </div>
+    </section>
+
+    <p id="cards-loading" class="text-center py-12 text-stone-500" role="status">
+      <span class="inline-block h-8 w-8 animate-pulse rounded-full bg-brand/20 mb-3" aria-hidden="true"></span><br>
+      Cargando técnicas…
+    </p>
+
+    <p id="empty-state" class="hidden text-center py-16 rounded-2xl bg-white border border-stone-200" role="status">
+      <span class="text-4xl" aria-hidden="true">🔍</span>
+      <span class="mt-4 block text-stone-600 font-medium">No hay técnicas que coincidan con tu búsqueda o filtros.</span>
+      <button type="button" id="empty-clear" class="mt-4 text-sm font-bold text-brand hover:underline">Limpiar búsqueda y filtros</button>
+    </p>
+
+    <div id="cards-area" class="relative">
+      <section id="cards-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" aria-label="Listado de técnicas"></section>
+    </div>
+
+    <div id="technique-preview-float" class="hidden fixed z-[100] w-[min(20rem,calc(100vw-2rem))] max-h-[min(32rem,85vh)] overflow-y-auto rounded-2xl border border-stone-200 bg-white shadow-2xl pointer-events-auto" role="tooltip" aria-live="polite">
+      <p class="sticky top-0 px-4 py-2.5 bg-brand text-xs font-bold text-white uppercase tracking-wider">Vista previa</p>
+      <div id="preview-float-body" class="p-4 text-sm text-stone-600"></div>
+    </div>
+  </main>
+
+  {{template "footer-public" .}}
+
+  <div id="wizard-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="absolute inset-0 bg-brand-deep/70 backdrop-blur-sm" data-close-modal></div>
+    <div class="relative w-full max-w-lg rounded-2xl bg-white shadow-2xl p-6 sm:p-8 border border-stone-100">
+      <h2 id="modal-title" class="text-xl font-extrabold text-stone-900">Tu técnica recomendada</h2>
+      <p class="mt-1 text-sm text-stone-500">Según tus respuestas en el cuestionario:</p>
+      <p id="modal-technique-name" class="mt-4 text-lg font-bold text-brand"></p>
+      <p id="modal-match-reasons" class="mt-2 text-sm font-semibold text-accent"></p>
+      <p id="modal-technique-intro" class="mt-2 text-sm text-stone-600 leading-relaxed"></p>
+      <p id="modal-second-choice" class="hidden mt-2 text-xs text-stone-500 italic"></p>
+      <div class="mt-6 flex flex-col sm:flex-row gap-3">
+        <a id="modal-detail-link" href="#" class="flex-1 text-center rounded-xl bg-brand text-white font-bold py-2.5 text-sm hover:bg-brand-deep focus:ring-2 focus:ring-brand-light">Ver ficha completa</a>
+        <button type="button" id="modal-go-card" class="flex-1 rounded-xl border-2 border-brand/30 text-brand font-bold py-2.5 text-sm hover:bg-brand-muted">Ver en la lista</button>
+        <button type="button" data-close-modal class="flex-1 rounded-xl border border-stone-200 text-stone-600 font-semibold py-2.5 text-sm hover:bg-stone-50">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>

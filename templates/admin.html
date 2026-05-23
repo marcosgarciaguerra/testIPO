@@ -3,17 +3,17 @@
 <head>
   {{template "head" .}}
 </head>
-<body class="bg-slate-100 text-slate-800 antialiased min-h-screen">
+<body class="bg-surface text-stone-800 antialiased min-h-screen">
 
-  <header class="bg-indigo-900 text-white">
+  <header class="bg-gradient-to-r from-brand-deep to-brand text-white">
     <div class="max-w-5xl mx-auto px-4 py-6 flex flex-wrap items-center justify-between gap-4">
       <div>
         <h1 class="text-xl font-bold">Administración de técnicas</h1>
-        <p class="text-sm text-indigo-200">API REST · credenciales vía <code class="bg-white/10 px-1 rounded">ADMIN_USER</code> / <code class="bg-white/10 px-1 rounded">ADMIN_PASS</code></p>
+        <p class="text-sm text-teal-100">API REST · credenciales vía <code class="bg-white/10 px-1 rounded">ADMIN_USER</code> / <code class="bg-white/10 px-1 rounded">ADMIN_PASS</code></p>
       </div>
-      <div class="flex gap-4 text-sm">
-        <a id="link-public" href="/" target="_blank" rel="noopener" class="text-indigo-200 hover:text-white">Abrir web pública ↗</a>
-        <a href="/" class="text-indigo-200 hover:text-white">← Inicio</a>
+      <div class="flex gap-4 text-sm font-semibold">
+        <a id="link-public" href="/" target="_blank" rel="noopener" class="text-teal-100 hover:text-white">Abrir web pública ↗</a>
+        <a href="/" class="text-teal-100 hover:text-white">← Inicio</a>
       </div>
     </div>
   </header>
@@ -25,13 +25,13 @@
       <form id="login-form" class="mt-4 space-y-3">
         <label class="block text-sm">
           <span class="font-medium">Usuario</span>
-          <input type="text" id="login-user" value="adminipo" required class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500">
+          <input type="text" id="login-user" value="adminipo" required class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-brand">
         </label>
         <label class="block text-sm">
           <span class="font-medium">Contraseña</span>
-          <input type="password" id="login-pass" required class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500">
+          <input type="password" id="login-pass" required class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-brand">
         </label>
-        <button type="submit" class="w-full rounded-lg bg-indigo-600 text-white font-semibold py-2.5 text-sm hover:bg-indigo-700">Entrar</button>
+        <button type="submit" class="w-full rounded-lg bg-brand text-white font-bold py-2.5 text-sm hover:bg-brand-deep">Entrar</button>
       </form>
       <p id="login-error" class="hidden mt-3 text-sm text-red-600 rounded-lg bg-red-50 px-3 py-2" role="alert"></p>
     </section>
@@ -80,25 +80,35 @@
           <label>Texto alt imagen
             <input name="imageAlt" class="mt-1 w-full rounded border px-3 py-2">
           </label>
+          <label>N. personas
+            <select name="people" required class="mt-1 w-full rounded border px-3 py-2">
+              <option value="1">1</option>
+              <option value="2-3">2-3</option>
+              <option value="5+">5+</option>
+            </select>
+          </label>
+          <label>Modalidad (coma: presencial,online)
+            <input name="modality" required class="mt-1 w-full rounded border px-3 py-2" placeholder="presencial,online">
+          </label>
+          <label>Tipo
+            <select name="tipo" required class="mt-1 w-full rounded border px-3 py-2">
+              <option value="insight">insight</option>
+              <option value="inquiry">inquiry</option>
+              <option value="testing">testing</option>
+            </select>
+          </label>
           <label>Duración
             <select name="duration" required class="mt-1 w-full rounded border px-3 py-2">
-              <option value="poco">poco</option>
-              <option value="medio">medio</option>
-              <option value="mucho">mucho</option>
+              <option value="30min">30min</option>
+              <option value="1h">1h</option>
+              <option value="1h+">1h+</option>
             </select>
           </label>
-          <label>Fase (coma: idea,diseño,producto)
-            <input name="phase" required class="mt-1 w-full rounded border px-3 py-2">
-          </label>
-          <label>Categoría
-            <select name="category" required class="mt-1 w-full rounded border px-3 py-2">
-              <option value="cuestionarios">cuestionarios</option>
-              <option value="observacion">observacion</option>
-              <option value="opiniones">opiniones</option>
-            </select>
+          <label>Resultados (coma si ambos)
+            <input name="results" required class="mt-1 w-full rounded border px-3 py-2" placeholder="cuantitativos,cualitativos">
           </label>
           <div class="sm:col-span-2 flex gap-3 pt-2">
-            <button type="submit" class="rounded-lg bg-indigo-600 text-white font-semibold px-5 py-2 hover:bg-indigo-700">Guardar</button>
+            <button type="submit" class="rounded-lg bg-brand text-white font-bold px-5 py-2 hover:bg-brand-deep">Guardar</button>
             <button type="button" id="btn-cancel" class="rounded-lg border px-5 py-2 hover:bg-slate-50">Cancelar</button>
           </div>
         </form>
@@ -164,7 +174,7 @@
           return '<div class="flex flex-wrap items-center justify-between gap-2 rounded-lg bg-white border p-4">' +
             '<div><strong>' + escapeHtml(t.name) + '</strong><span class="text-slate-500 text-xs ml-2">' + escapeHtml(t.id) + '</span></div>' +
             '<div class="flex gap-2">' +
-            '<button type="button" data-edit="' + escapeHtml(t.id) + '" class="text-sm text-indigo-600 font-medium hover:underline">Editar</button>' +
+            '<button type="button" data-edit="' + escapeHtml(t.id) + '" class="text-sm text-brand font-medium hover:underline">Editar</button>' +
             '<button type="button" data-del="' + escapeHtml(t.id) + '" class="text-sm text-red-600 font-medium hover:underline">Eliminar</button>' +
             '</div></div>';
         }).join('');
@@ -208,9 +218,11 @@
         form.elements['qualQuant'].value = t.qualQuant;
         form.elements['requirements'].value = t.requirements;
         form.elements['imageAlt'].value = t.imageAlt || '';
-        form.elements['duration'].value = t.duration;
-        form.elements['phase'].value = t.phase;
-        form.elements['category'].value = t.category;
+        form.elements['people'].value = t.people || '1';
+        form.elements['modality'].value = t.modality || 'online';
+        form.elements['tipo'].value = t.tipo || 'inquiry';
+        form.elements['duration'].value = t.duration || '1h';
+        form.elements['results'].value = t.results || 'cualitativos';
         editor.classList.remove('hidden');
       }
 
@@ -230,9 +242,11 @@
           imageAlt: form.elements['imageAlt'].value.trim() || form.elements['name'].value.trim(),
           imageURL: form.elements['imageURL'].value.trim() || '/static/images/' + id + '.svg',
           howTo: howTo,
+          people: form.elements['people'].value,
+          modality: form.elements['modality'].value.trim(),
+          tipo: form.elements['tipo'].value,
           duration: form.elements['duration'].value,
-          phase: form.elements['phase'].value.trim(),
-          category: form.elements['category'].value
+          results: form.elements['results'].value.trim()
         };
       }
 

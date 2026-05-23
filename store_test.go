@@ -28,9 +28,11 @@ func TestTechniqueStore_CRUD(t *testing.T) {
 		MethodType:   "Test",
 		QualQuant:    "Cual",
 		Requirements: "Req",
-		Duration:     "poco",
-		Phase:        "idea",
-		Category:     "observacion",
+		People:       "1",
+		Modality:     "online",
+		Tipo:         "inquiry",
+		Duration:     "30min",
+		Results:      "cualitativos",
 	}
 	if err := store.Create(custom); err != nil {
 		t.Fatal("create:", err)

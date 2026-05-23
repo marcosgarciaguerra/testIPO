@@ -9,16 +9,18 @@
     "qualQuant": "Cualitativo",
     "requirements": "1 a 2 horas, 3–5 evaluadores expertos.",
     "imageAlt": "Evaluación heurística de usabilidad",
-    "imageURL": "/static/images/heuristica.svg",
+    "imageURL": "/static/images/heuristica.png",
     "howTo": [
       "Selecciona 3–5 evaluadores con conocimiento de usabilidad.",
       "Define el alcance (pantallas o flujos a revisar).",
       "Cada evaluador recorre el sistema y anota problemas según heurísticas.",
       "Consolidad hallazgos y priorizad por severidad."
     ],
-    "duration": "poco",
-    "phase": "idea,diseño,producto",
-    "category": "observacion"
+    "people": "2-3",
+    "modality": "presencial,online",
+    "tipo": "insight",
+    "duration": "1h",
+    "results": "cualitativos"
   },
   {
     "id": "card-sorting",
@@ -37,9 +39,11 @@
       "Pide que agrupen tarjetas y nombren cada categoría.",
       "Analiza patrones para proponer la arquitectura de información."
     ],
-    "duration": "mucho",
-    "phase": "idea",
-    "category": "opiniones"
+    "people": "5+",
+    "modality": "presencial,online",
+    "tipo": "inquiry",
+    "duration": "1h+",
+    "results": "cualitativos,cuantitativos"
   },
   {
     "id": "cinco-segundos",
@@ -58,9 +62,11 @@
       "Registra si comunicó el propósito principal.",
       "Repite con varios participantes y compara respuestas."
     ],
-    "duration": "poco",
-    "phase": "diseño",
-    "category": "observacion"
+    "people": "5+",
+    "modality": "online",
+    "tipo": "inquiry",
+    "duration": "30min",
+    "results": "cuantitativos"
   },
   {
     "id": "think-aloud",
@@ -79,9 +85,11 @@
       "Graba sesión (con consentimiento) o toma notas.",
       "Identifica puntos de fricción y malentendidos."
     ],
-    "duration": "medio",
-    "phase": "diseño",
-    "category": "observacion"
+    "people": "5+",
+    "modality": "presencial",
+    "tipo": "testing",
+    "duration": "1h",
+    "results": "cualitativos"
   },
   {
     "id": "sus",
@@ -100,8 +108,10 @@
       "Compara resultados entre versiones o con la media del sector (~68).",
       "Complementa con preguntas abiertas si necesitas contexto."
     ],
-    "duration": "poco",
-    "phase": "producto",
-    "category": "cuestionarios"
+    "people": "5+",
+    "modality": "online",
+    "tipo": "inquiry",
+    "duration": "30min",
+    "results": "cuantitativos"
   }
 ]

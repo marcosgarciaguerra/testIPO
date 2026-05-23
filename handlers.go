@@ -30,11 +30,14 @@ func initialLetter(s string) string {
 
 func loadTemplates() error {
 	funcMap := template.FuncMap{
-		"initial":        initialLetter,
-		"labelDuration":  labelDuration,
-		"labelCategory":  labelCategory,
-		"labelPhase":     labelPhase,
-		"labelPhasesCSV": labelPhasesCSV,
+		"initial":           initialLetter,
+		"labelPeople":       labelPeople,
+		"labelModality":     labelModality,
+		"labelTipo":         labelTipo,
+		"labelDuration":     labelDuration,
+		"labelResults":      labelResults,
+		"labelModalitiesCSV": labelModalitiesCSV,
+		"labelResultsCSV":   labelResultsCSV,
 	}
 	var err error
 	templates, err = template.New("").Funcs(funcMap).ParseGlob("templates/*.html")

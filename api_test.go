@@ -61,7 +61,7 @@ func TestAPI_PostWithAuth(t *testing.T) {
 	payload, _ := json.Marshal(Technique{
 		ID: "api-test", Name: "API Test", Introduction: "i", Objective: "o",
 		Lifecycle: "l", MethodType: "m", QualQuant: "q", Requirements: "r",
-		Duration: "poco", Phase: "idea", Category: "observacion",
+		People: "1", Modality: "online", Tipo: "inquiry", Duration: "30min", Results: "cualitativos",
 	})
 	req := httptest.NewRequest(http.MethodPost, "/api/techniques", bytes.NewReader(payload))
 	req.SetBasicAuth("adminipo", "adminn")

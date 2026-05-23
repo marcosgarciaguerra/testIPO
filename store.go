@@ -33,16 +33,18 @@ func defaultTechniques() []Technique {
 			QualQuant:    "Cualitativo",
 			Requirements: "1 a 2 horas, 3–5 evaluadores expertos.",
 			ImageAlt:     "Evaluación heurística de usabilidad",
-			ImageURL:     "/static/images/heuristica.svg",
+			ImageURL:     "/static/images/heuristica.png",
 			HowTo: []string{
 				"Selecciona 3–5 evaluadores con conocimiento de usabilidad.",
 				"Define el alcance (pantallas o flujos a revisar).",
 				"Cada evaluador recorre el sistema y anota problemas según heurísticas.",
 				"Consolidad hallazgos y priorizad por severidad.",
 			},
-			Duration:     "poco",
-			Phase:        "idea,diseño,producto",
-			Category:     "observacion",
+			People:       "2-3",
+			Modality:     "presencial,online",
+			Tipo:         "insight",
+			Duration:     "1h",
+			Results:      "cualitativos",
 		},
 		{
 			ID:           "card-sorting",
@@ -61,9 +63,11 @@ func defaultTechniques() []Technique {
 				"Pide que agrupen tarjetas y nombren cada categoría.",
 				"Analiza patrones para proponer la arquitectura de información.",
 			},
-			Duration:     "mucho",
-			Phase:        "idea",
-			Category:     "opiniones",
+			People:       "5+",
+			Modality:     "presencial,online",
+			Tipo:         "inquiry",
+			Duration:     "1h+",
+			Results:      "cualitativos,cuantitativos",
 		},
 		{
 			ID:           "cinco-segundos",
@@ -82,9 +86,11 @@ func defaultTechniques() []Technique {
 				"Registra si comunicó el propósito principal.",
 				"Repite con varios participantes y compara respuestas.",
 			},
-			Duration:     "poco",
-			Phase:        "diseño",
-			Category:     "observacion",
+			People:       "5+",
+			Modality:     "online",
+			Tipo:         "inquiry",
+			Duration:     "30min",
+			Results:      "cuantitativos",
 		},
 		{
 			ID:           "think-aloud",
@@ -103,9 +109,11 @@ func defaultTechniques() []Technique {
 				"Graba sesión (con consentimiento) o toma notas.",
 				"Identifica puntos de fricción y malentendidos.",
 			},
-			Duration:     "medio",
-			Phase:        "diseño",
-			Category:     "observacion",
+			People:       "5+",
+			Modality:     "presencial",
+			Tipo:         "testing",
+			Duration:     "1h",
+			Results:      "cualitativos",
 		},
 		{
 			ID:           "sus",
@@ -124,9 +132,11 @@ func defaultTechniques() []Technique {
 				"Compara resultados entre versiones o con la media del sector (~68).",
 				"Complementa con preguntas abiertas si necesitas contexto.",
 			},
-			Duration:     "poco",
-			Phase:        "producto",
-			Category:     "cuestionarios",
+			People:       "5+",
+			Modality:     "online",
+			Tipo:         "inquiry",
+			Duration:     "30min",
+			Results:      "cuantitativos",
 		},
 	}
 }
@@ -178,6 +188,21 @@ func enrichTechniques(list []Technique) []Technique {
 			}
 			if len(t.HowTo) == 0 {
 				list[i].HowTo = d.HowTo
+			}
+			if t.People == "" {
+				list[i].People = d.People
+			}
+			if t.Modality == "" {
+				list[i].Modality = d.Modality
+			}
+			if t.Tipo == "" {
+				list[i].Tipo = d.Tipo
+			}
+			if t.Duration == "" || t.Duration == "poco" || t.Duration == "medio" || t.Duration == "mucho" {
+				list[i].Duration = d.Duration
+			}
+			if t.Results == "" {
+				list[i].Results = d.Results
 			}
 		}
 		if list[i].ImageURL == "" {

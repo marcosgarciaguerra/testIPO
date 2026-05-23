@@ -2,13 +2,17 @@
   'use strict';
 
   var LABELS = {
-    duration: { poco: 'Poco (<1 día)', medio: 'Medio (varios días)', mucho: 'Mucho (semanas)' },
-    phase: { idea: 'Idea inicial', 'diseño': 'Diseño (prototipo)', producto: 'Producto ya desarrollado' },
-    category: { cuestionarios: 'Cuestionarios', observacion: 'Observación directa', opiniones: 'Opiniones / entrevistas' }
+    people: { '1': '1', '2-3': '2-3', '5+': '5+' },
+    modality: { presencial: 'Presencial', online: 'Online' },
+    tipo: { insight: 'Insight', inquiry: 'Inquiry', testing: 'Testing' },
+    duration: { '30min': '30 min', '1h': '1h', '1h+': '1h+' },
+    results: { cuantitativos: 'Cuantitativos', cualitativos: 'Cualitativos' }
   };
 
+  var FILTER_NAMES = ['people', 'modality', 'tipo', 'duration', 'results'];
   var techniques = [];
   var cards = [];
+  var previewHideTimer = null;
 
   var searchInput = document.getElementById('search');
   var resultCount = document.getElementById('result-count');
@@ -17,6 +21,10 @@
   var cardsLoading = document.getElementById('cards-loading');
   var activeFiltersEl = document.getElementById('active-filters');
   var wizardBanner = document.getElementById('wizard-banner');
+  var previewFloat = document.getElementById('technique-preview-float');
+  var previewFloatBody = document.getElementById('preview-float-body');
+  var cardsArea = document.getElementById('cards-area');
+  var hoveredCard = null;
 
   function escapeHtml(s) {
     var d = document.createElement('div');
@@ -28,48 +36,168 @@
     return (map && map[key]) || key;
   }
 
-  function showWizardBanner(msg, type) {
-    if (!wizardBanner) return;
-    wizardBanner.textContent = msg;
-    wizardBanner.className = 'mt-4 rounded-lg px-4 py-3 text-sm ' +
-      (type === 'error' ? 'bg-red-500/20 text-red-100 border border-red-300/40' : 'bg-teal-500/20 text-teal-50 border border-teal-300/40');
-    wizardBanner.classList.remove('hidden');
-    wizardBanner.setAttribute('role', 'alert');
+  function matchesCSV(datasetVal, filterVal) {
+    if (!filterVal) return true;
+    return (datasetVal || '').split(',').map(function (s) { return s.trim(); }).indexOf(filterVal) >= 0;
   }
 
-  function hideWizardBanner() {
-    if (wizardBanner) wizardBanner.classList.add('hidden');
+  function getTechnique(id) {
+    for (var i = 0; i < techniques.length; i++) {
+      if (techniques[i].id === id) return techniques[i];
+    }
+    return null;
+  }
+
+  function buildPreviewHTML(t) {
+    if (!t) return '';
+    var img = t.imageURL || '/static/images/' + t.id + '.svg';
+    var steps = (t.howTo || []).slice(0, 3).map(function (s, i) {
+      return '<li>' + escapeHtml(s) + '</li>';
+    }).join('');
+    return (
+      '<img src="' + escapeHtml(img) + '" alt="" class="w-full h-36 object-cover rounded-lg mb-4">' +
+      '<h3 class="text-lg font-bold text-slate-900">' + escapeHtml(t.name) + '</h3>' +
+      '<p class="mt-2 text-xs font-bold uppercase tracking-wide text-brand">Introducción</p>' +
+      '<p class="mt-1">' + escapeHtml(t.introduction) + '</p>' +
+      '<p class="mt-3 text-xs font-bold uppercase tracking-wide text-brand">Objetivo</p>' +
+      '<p class="mt-1">' + escapeHtml(t.objective) + '</p>' +
+      (steps ? '<p class="mt-3 text-xs font-bold uppercase tracking-wide text-brand">Cómo ejecutarla</p><ol class="mt-1 list-decimal list-inside space-y-1">' + steps + '</ol>' : '') +
+      '<div class="mt-4 flex flex-wrap gap-1 text-xs">' +
+        '<span class="rounded-full bg-brand-muted text-brand px-2 py-0.5 font-semibold">' + escapeHtml(label(LABELS.tipo, t.tipo)) + '</span>' +
+        '<span class="rounded-full bg-stone-100 text-stone-600 px-2 py-0.5 font-semibold">' + escapeHtml(label(LABELS.duration, t.duration)) + '</span>' +
+      '</div>' +
+      '<a href="/tecnicas/' + escapeHtml(t.id) + '" class="mt-4 block w-full text-center rounded-xl bg-brand text-white font-bold py-2.5 text-sm hover:bg-brand-deep pointer-events-auto">Abrir ficha completa</a>'
+    );
+  }
+
+  function positionPreview(card) {
+    if (!previewFloat || !card) return;
+    var rect = card.getBoundingClientRect();
+    var gap = 12;
+    var pw = previewFloat.offsetWidth || 320;
+    var ph = previewFloat.offsetHeight || 320;
+
+    var left = rect.right + gap;
+    var top = rect.top;
+
+    if (left + pw > window.innerWidth - gap) {
+      left = rect.left - pw - gap;
+    }
+    if (left < gap) {
+      left = Math.min(Math.max(gap, rect.left), window.innerWidth - pw - gap);
+      top = rect.bottom + gap;
+    }
+    if (top + ph > window.innerHeight - gap) {
+      top = Math.max(gap, window.innerHeight - ph - gap);
+    }
+
+    previewFloat.style.left = Math.round(left) + 'px';
+    previewFloat.style.top = Math.round(top) + 'px';
+  }
+
+  function showPreviewForCard(card) {
+    var t = getTechnique(card.dataset.id);
+    if (!t || !previewFloat || !previewFloatBody) return;
+
+    if (hoveredCard && hoveredCard !== card) {
+      hoveredCard.classList.remove('relative', 'z-40', 'is-highlighted');
+      hoveredCard.style.zIndex = '';
+    }
+    hoveredCard = card;
+    card.classList.add('relative', 'z-40', 'is-highlighted');
+    card.style.zIndex = '40';
+
+    previewFloatBody.innerHTML = buildPreviewHTML(t);
+    previewFloat.classList.remove('hidden');
+    requestAnimationFrame(function () {
+      positionPreview(card);
+    });
+  }
+
+  function hidePreview() {
+    if (hoveredCard) {
+      hoveredCard.classList.remove('relative', 'z-40', 'is-highlighted');
+      hoveredCard.style.zIndex = '';
+      hoveredCard = null;
+    }
+    if (previewFloat) previewFloat.classList.add('hidden');
+  }
+
+  function scheduleHidePreview() {
+    clearTimeout(previewHideTimer);
+    previewHideTimer = setTimeout(function () {
+      if (previewFloat && previewFloat.matches(':hover')) return;
+      hidePreview();
+    }, 120);
   }
 
   function buildCard(t) {
     var img = t.imageURL || '/static/images/' + t.id + '.svg';
-    var searchText = [t.name, t.objective, t.introduction, t.lifecycle, t.methodType, t.qualQuant].join(' ');
+    var searchText = [t.name, t.objective, t.introduction, t.lifecycle, t.methodType, t.qualQuant, t.tipo, t.people]
+      .concat(t.howTo || [])
+      .join(' ');
     var article = document.createElement('article');
     article.id = 'card-' + t.id;
-    article.className = 'technique-card flex flex-col rounded-xl bg-white shadow-md border border-slate-200 overflow-hidden transition hover:shadow-lg hover:-translate-y-0.5';
+    article.className = 'technique-card flex flex-col overflow-hidden cursor-pointer';
     article.dataset.id = t.id;
-    article.dataset.duration = t.duration;
-    article.dataset.phase = t.phase;
-    article.dataset.category = t.category;
+    article.dataset.people = t.people || '';
+    article.dataset.modality = t.modality || '';
+    article.dataset.tipo = t.tipo || '';
+    article.dataset.duration = t.duration || '';
+    article.dataset.results = t.results || '';
     article.dataset.introduction = t.introduction || '';
     article.dataset.search = searchText;
+    article.setAttribute('aria-label', 'Técnica: ' + t.name);
 
     article.innerHTML =
-      '<div class="aspect-[5/3] bg-slate-100 overflow-hidden">' +
+      '<div class="aspect-[5/3] bg-stone-100 overflow-hidden">' +
         '<img src="' + escapeHtml(img) + '" alt="' + escapeHtml(t.imageAlt || t.name) + '" class="w-full h-full object-cover" loading="lazy">' +
       '</div>' +
-      '<div class="relative flex flex-col flex-1 p-5">' +
-        '<h3 class="text-lg font-bold text-slate-900">' + escapeHtml(t.name) + '</h3>' +
-        '<p class="objective-focus mt-2 text-sm text-slate-600 line-clamp-3 flex-1 rounded-md outline-none focus:ring-2 focus:ring-indigo-400 focus:bg-indigo-50/50 cursor-help" tabindex="0" role="button" aria-describedby="intro-' + escapeHtml(t.id) + '" data-intro-target="intro-' + escapeHtml(t.id) + '">' + escapeHtml(t.objective) + '</p>' +
-        '<div id="intro-' + escapeHtml(t.id) + '" class="intro-popover hidden absolute left-5 right-5 top-full z-30 mt-1 rounded-lg border border-indigo-200 bg-white p-4 text-sm text-slate-700 shadow-xl" role="tooltip">' +
-          '<p class="font-semibold text-indigo-800 text-xs uppercase tracking-wide mb-1">Introducción</p>' +
-          '<p>' + escapeHtml(t.introduction) + '</p>' +
-        '</div>' +
-        '<a href="/tecnicas/' + escapeHtml(t.id) + '" class="mt-4 w-full text-center rounded-lg border border-indigo-200 bg-indigo-50 text-indigo-700 font-semibold text-sm py-2.5 hover:bg-indigo-100 transition focus:outline-none focus:ring-2 focus:ring-indigo-500">Ver más</a>' +
+      '<div class="flex flex-col flex-1 p-5">' +
+        '<h3 class="text-lg font-bold text-stone-900">' + escapeHtml(t.name) + '</h3>' +
+        '<p class="mt-2 text-sm text-stone-600 line-clamp-3 flex-1">' + escapeHtml(t.objective) + '</p>' +
+        '<span class="mt-4 w-full text-center rounded-xl bg-brand-muted text-brand font-bold text-sm py-2.5 group-hover:bg-brand group-hover:text-white transition-colors">Ver ficha</span>' +
       '</div>';
+
+    article.addEventListener('click', function () {
+      window.location.href = '/tecnicas/' + t.id;
+    });
 
     return article;
   }
+
+  function bindCardPreview() {
+    cards.forEach(function (card) {
+      card.addEventListener('mouseenter', function () {
+        clearTimeout(previewHideTimer);
+        showPreviewForCard(card);
+      });
+      card.addEventListener('mouseleave', function () {
+        scheduleHidePreview();
+      });
+    });
+
+    if (previewFloat) {
+      previewFloat.addEventListener('mouseenter', function () {
+        clearTimeout(previewHideTimer);
+      });
+      previewFloat.addEventListener('mouseleave', function () {
+        scheduleHidePreview();
+      });
+    }
+  }
+
+  window.addEventListener('scroll', function () {
+    if (hoveredCard && previewFloat && !previewFloat.classList.contains('hidden')) {
+      positionPreview(hoveredCard);
+    }
+  }, true);
+
+  window.addEventListener('resize', function () {
+    if (hoveredCard && previewFloat && !previewFloat.classList.contains('hidden')) {
+      positionPreview(hoveredCard);
+    }
+  });
 
   function renderCards(list) {
     cardsGrid.innerHTML = '';
@@ -77,7 +205,7 @@
       cardsGrid.appendChild(buildCard(t));
     });
     cards = Array.from(document.querySelectorAll('.technique-card'));
-    bindPopovers();
+    bindCardPreview();
     applyFilters();
   }
 
@@ -89,7 +217,7 @@
       techniques = await res.json();
       renderCards(techniques);
     } catch (e) {
-      cardsGrid.innerHTML = '<p class="col-span-full text-center text-red-600 py-8">No se pudieron cargar las técnicas. Recarga la página.</p>';
+      cardsGrid.innerHTML = '<p class="col-span-full text-center text-red-600 py-8">No se pudieron cargar las técnicas.</p>';
     } finally {
       if (cardsLoading) cardsLoading.classList.add('hidden');
     }
@@ -100,19 +228,13 @@
     return el ? el.value : '';
   }
 
-  function cardMatchesPhase(card, phaseFilter) {
-    if (!phaseFilter) return true;
-    return (card.dataset.phase || '').split(',').includes(phaseFilter);
-  }
-
   function cardVisible(card) {
     var q = (searchInput.value || '').trim().toLowerCase();
-    var duration = getFilter('duration');
-    var phase = getFilter('phase');
-    var category = getFilter('category');
-    if (duration && card.dataset.duration !== duration) return false;
-    if (!cardMatchesPhase(card, phase)) return false;
-    if (category && card.dataset.category !== category) return false;
+    if (getFilter('people') && card.dataset.people !== getFilter('people')) return false;
+    if (!matchesCSV(card.dataset.modality, getFilter('modality'))) return false;
+    if (getFilter('tipo') && card.dataset.tipo !== getFilter('tipo')) return false;
+    if (getFilter('duration') && card.dataset.duration !== getFilter('duration')) return false;
+    if (!matchesCSV(card.dataset.results, getFilter('results'))) return false;
     if (q && !(card.dataset.search || '').toLowerCase().includes(q)) return false;
     return true;
   }
@@ -120,52 +242,45 @@
   function updateActiveFilterChips() {
     if (!activeFiltersEl) return;
     var chips = [];
-    var d = getFilter('duration');
-    var p = getFilter('phase');
-    var c = getFilter('category');
+    var fieldLabels = { people: 'N. personas', modality: 'Modalidad', tipo: 'Tipo', duration: 'Duración', results: 'Resultados' };
+    FILTER_NAMES.forEach(function (name) {
+      var v = getFilter(name);
+      if (v) chips.push(fieldLabels[name] + ': ' + label(LABELS[name], v));
+    });
     var q = (searchInput.value || '').trim();
-    if (d) chips.push('Duración: ' + label(LABELS.duration, d));
-    if (p) chips.push('Fase: ' + label(LABELS.phase, p));
-    if (c) chips.push('Tipo: ' + label(LABELS.category, c));
-    if (q) chips.push('Búsqueda: “' + q + '”');
-    if (chips.length === 0) {
+    if (q) chips.push('Búsqueda: “' + escapeHtml(q) + '”');
+    if (!chips.length) {
       activeFiltersEl.classList.add('hidden');
       activeFiltersEl.innerHTML = '';
       return;
     }
     activeFiltersEl.classList.remove('hidden');
     activeFiltersEl.innerHTML = chips.map(function (text) {
-      return '<span class="inline-flex items-center rounded-full bg-indigo-100 text-indigo-800 px-3 py-1 text-xs font-medium">' + escapeHtml(text) + '</span>';
+      return '<span class="inline-flex rounded-full bg-brand-muted text-brand px-3 py-1 text-xs font-semibold">' + text + '</span>';
     }).join('');
   }
 
   function syncURLFromFilters() {
     var params = new URLSearchParams();
-    var d = getFilter('duration');
-    var p = getFilter('phase');
-    var c = getFilter('category');
+    FILTER_NAMES.forEach(function (name) {
+      var v = getFilter(name);
+      if (v) params.set(name, v);
+    });
     var q = (searchInput.value || '').trim();
-    if (d) params.set('duracion', d);
-    if (p) params.set('fase', p);
-    if (c) params.set('tipo', c);
     if (q) params.set('q', q);
     var qs = params.toString();
-    var url = qs ? '?' + qs : window.location.pathname;
-    history.replaceState(null, '', url);
+    history.replaceState(null, '', qs ? '?' + qs : window.location.pathname);
   }
 
   function applyFiltersFromURL() {
     var params = new URLSearchParams(window.location.search);
-    var d = params.get('duracion') || '';
-    var p = params.get('fase') || '';
-    var c = params.get('tipo') || '';
-    var q = params.get('q') || '';
-    ['duration', 'phase', 'category'].forEach(function (name) {
-      var val = name === 'duration' ? d : name === 'phase' ? p : c;
+    FILTER_NAMES.forEach(function (name) {
+      var v = params.get(name) || '';
       document.querySelectorAll('input[name="' + name + '"]').forEach(function (input) {
-        input.checked = input.value === val;
+        input.checked = input.value === v;
       });
     });
+    var q = params.get('q');
     if (q) searchInput.value = q;
     applyFilters();
   }
@@ -184,60 +299,35 @@
     syncURLFromFilters();
   }
 
-  function setFilters(duration, phase, category) {
-    document.querySelectorAll('input[name="duration"]').forEach(function (input) {
-      input.checked = input.value === (duration || '');
-    });
-    document.querySelectorAll('input[name="phase"]').forEach(function (input) {
-      input.checked = input.value === (phase || '');
-    });
-    document.querySelectorAll('input[name="category"]').forEach(function (input) {
-      input.checked = input.value === (category || '');
+  function clearAllFilters() {
+    searchInput.value = '';
+    FILTER_NAMES.forEach(function (name) {
+      document.querySelectorAll('input[name="' + name + '"]').forEach(function (input) {
+        input.checked = input.value === '';
+      });
     });
     applyFilters();
   }
 
-  function bindPopovers() {
-    function hideAll() {
-      document.querySelectorAll('.intro-popover').forEach(function (p) { p.classList.add('hidden'); });
-    }
-    document.querySelectorAll('.objective-focus').forEach(function (el) {
-      el.addEventListener('focus', function () {
-        hideAll();
-        var pop = document.getElementById(el.getAttribute('data-intro-target'));
-        if (pop) pop.classList.remove('hidden');
-      });
-      el.addEventListener('blur', function () {
-        setTimeout(function () {
-          var pop = document.getElementById(el.getAttribute('data-intro-target'));
-          if (pop && !pop.contains(document.activeElement)) pop.classList.add('hidden');
-        }, 200);
-      });
-      el.addEventListener('click', function (e) {
-        e.preventDefault();
-        var pop = document.getElementById(el.getAttribute('data-intro-target'));
-        if (!pop) return;
-        var open = !pop.classList.contains('hidden');
-        hideAll();
-        if (!open) pop.classList.remove('hidden');
-      });
+  FILTER_NAMES.forEach(function (name) {
+    document.querySelectorAll('input[name="' + name + '"]').forEach(function (el) {
+      el.addEventListener('change', applyFilters);
     });
-    document.addEventListener('click', function (e) {
-      if (!e.target.closest('.objective-focus') && !e.target.closest('.intro-popover')) hideAll();
-    });
-    document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape') hideAll();
-    });
-  }
-
-  document.querySelectorAll('input[name="duration"], input[name="phase"], input[name="category"]').forEach(function (el) {
-    el.addEventListener('change', applyFilters);
   });
   searchInput.addEventListener('input', applyFilters);
-  document.getElementById('clear-filters').addEventListener('click', function () {
-    searchInput.value = '';
-    setFilters('', '', '');
-  });
+  document.getElementById('clear-filters').addEventListener('click', clearAllFilters);
+  var emptyClear = document.getElementById('empty-clear');
+  if (emptyClear) emptyClear.addEventListener('click', clearAllFilters);
+
+  if (searchInput) {
+    searchInput.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') {
+        searchInput.value = '';
+        applyFilters();
+        searchInput.blur();
+      }
+    });
+  }
 
   /* Wizard */
   var wizStep = 1;
@@ -248,10 +338,22 @@
   var wizRestart = document.getElementById('wizard-restart');
   var wizDots = [1, 2, 3].map(function (n) { return document.getElementById('wiz-dot-' + n); });
 
+  function showWizardBanner(msg, type) {
+    if (!wizardBanner) return;
+    wizardBanner.textContent = msg;
+    wizardBanner.className = 'mt-4 rounded-lg px-4 py-3 text-sm ' +
+      (type === 'error' ? 'bg-red-500/20 text-red-100 border border-red-300/40' : 'bg-teal-500/20 text-teal-50 border border-teal-300/40');
+    wizardBanner.classList.remove('hidden');
+  }
+
+  function hideWizardBanner() {
+    if (wizardBanner) wizardBanner.classList.add('hidden');
+  }
+
   function wizSelectForStep(step) {
-    if (step === 1) return document.getElementById('wizard-phase');
+    if (step === 1) return document.getElementById('wizard-tipo');
     if (step === 2) return document.getElementById('wizard-duration');
-    return document.getElementById('wizard-category');
+    return document.getElementById('wizard-results');
   }
 
   function updateWizardUI() {
@@ -259,8 +361,8 @@
       s.classList.toggle('hidden', parseInt(s.dataset.step, 10) !== wizStep);
     });
     wizDots.forEach(function (d, i) {
-      d.classList.toggle('bg-teal-400', i + 1 <= wizStep);
-      d.classList.toggle('bg-white/30', i + 1 > wizStep);
+      d.classList.toggle('bg-accent', i + 1 <= wizStep);
+      d.classList.toggle('bg-white/25', i + 1 > wizStep);
     });
     wizPrev.classList.toggle('hidden', wizStep === 1);
     wizNext.classList.toggle('hidden', wizStep === 3);
@@ -269,18 +371,13 @@
     hideWizardBanner();
   }
 
-  function validateCurrentStep() {
+  wizNext.addEventListener('click', function () {
     var sel = wizSelectForStep(wizStep);
     if (!sel.value) {
       showWizardBanner('Selecciona una opción antes de continuar.', 'error');
       sel.focus();
-      return false;
+      return;
     }
-    return true;
-  }
-
-  wizNext.addEventListener('click', function () {
-    if (!validateCurrentStep()) return;
     if (wizStep < 3) { wizStep++; updateWizardUI(); }
   });
   wizPrev.addEventListener('click', function () {
@@ -289,38 +386,27 @@
   if (wizRestart) {
     wizRestart.addEventListener('click', function () {
       wizStep = 1;
-      document.getElementById('wizard-phase').value = '';
+      document.getElementById('wizard-tipo').value = '';
       document.getElementById('wizard-duration').value = '';
-      document.getElementById('wizard-category').value = '';
+      document.getElementById('wizard-results').value = '';
       updateWizardUI();
     });
   }
 
-  function scoreCard(card, phase, duration, category) {
+  function scoreCard(card, tipo, duration, results) {
     var score = 0;
     var reasons = [];
-    if (phase && cardMatchesPhase(card, phase)) {
-      score += 3;
-      reasons.push('fase del proyecto');
-    }
-    if (duration && card.dataset.duration === duration) {
-      score += 2;
-      reasons.push('tiempo disponible');
-    }
-    if (category && card.dataset.category === category) {
-      score += 2;
-      reasons.push('tipo de técnica');
-    }
+    if (tipo && card.dataset.tipo === tipo) { score += 3; reasons.push('tipo'); }
+    if (duration && card.dataset.duration === duration) { score += 2; reasons.push('duración'); }
+    if (results && matchesCSV(card.dataset.results, results)) { score += 2; reasons.push('resultados'); }
     return { score: score, reasons: reasons };
   }
 
-  function rankMatches(phase, duration, category) {
-    var ranked = cards.map(function (card) {
-      var r = scoreCard(card, phase, duration, category);
+  function rankMatches(tipo, duration, results) {
+    return cards.map(function (card) {
+      var r = scoreCard(card, tipo, duration, results);
       return { card: card, score: r.score, reasons: r.reasons };
-    }).filter(function (x) { return x.score > 0; });
-    ranked.sort(function (a, b) { return b.score - a.score; });
-    return ranked;
+    }).filter(function (x) { return x.score > 0; }).sort(function (a, b) { return b.score - a.score; });
   }
 
   var modal = document.getElementById('wizard-modal');
@@ -336,16 +422,12 @@
     modalName.textContent = best.querySelector('h3').textContent;
     modalIntro.textContent = best.dataset.introduction || '';
     if (modalReasons) {
-      modalReasons.textContent = reasons.length
-        ? 'Coincide en: ' + reasons.join(', ') + '.'
-        : 'Mejor aproximación según tus respuestas.';
+      modalReasons.textContent = reasons.length ? 'Coincide en: ' + reasons.join(', ') + '.' : 'Mejor aproximación.';
     }
-    if (modalSecond && second && second.card !== best) {
+    if (modalSecond && second) {
       modalSecond.classList.remove('hidden');
       modalSecond.textContent = 'Alternativa: ' + second.card.querySelector('h3').textContent;
-    } else if (modalSecond) {
-      modalSecond.classList.add('hidden');
-    }
+    } else if (modalSecond) modalSecond.classList.add('hidden');
     modalDetailLink.href = '/tecnicas/' + recommendedId;
     modal.classList.remove('hidden');
     document.body.classList.add('overflow-hidden');
@@ -361,41 +443,43 @@
   });
 
   wizSubmit.addEventListener('click', function () {
-    if (!validateCurrentStep()) return;
-    var phase = document.getElementById('wizard-phase').value;
+    var tipo = document.getElementById('wizard-tipo').value;
     var duration = document.getElementById('wizard-duration').value;
-    var category = document.getElementById('wizard-category').value;
-    var ranked = rankMatches(phase, duration, category);
-    if (ranked.length === 0) {
-      showWizardBanner('Ninguna técnica encaja del todo. Prueba otra combinación o explora el listado con filtros.', 'error');
+    var results = document.getElementById('wizard-results').value;
+    if (!tipo || !duration || !results) {
+      showWizardBanner('Completa las tres preguntas.', 'error');
       return;
     }
-    var best = ranked[0];
-    var second = ranked.length > 1 ? ranked[1] : null;
-    if (best.score < 4) {
-      showWizardBanner('Coincidencia parcial — te mostramos la más cercana. Puedes ajustar filtros en el listado.', 'info');
+    var ranked = rankMatches(tipo, duration, results);
+    if (!ranked.length) {
+      showWizardBanner('Sin coincidencia exacta. Prueba otros filtros en el listado.', 'error');
+      return;
     }
-    openModal(best.card, second, best.reasons);
+    if (ranked[0].score < 4) showWizardBanner('Coincidencia parcial — mostramos la más cercana.', 'info');
+    openModal(ranked[0].card, ranked[1] || null, ranked[0].reasons);
   });
 
   document.getElementById('modal-go-card').addEventListener('click', function () {
     if (!recommendedId) return;
-    setFilters(
-      document.getElementById('wizard-duration').value,
-      document.getElementById('wizard-phase').value,
-      document.getElementById('wizard-category').value
-    );
+    document.querySelectorAll('input[name="tipo"]').forEach(function (i) { i.checked = i.value === document.getElementById('wizard-tipo').value; });
+    document.querySelectorAll('input[name="duration"]').forEach(function (i) { i.checked = i.value === document.getElementById('wizard-duration').value; });
+    document.querySelectorAll('input[name="results"]').forEach(function (i) { i.checked = i.value === document.getElementById('wizard-results').value; });
+    applyFilters();
     closeModal();
     var card = document.getElementById('card-' + recommendedId);
-    if (card) {
-      card.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      card.classList.add('ring-2', 'ring-teal-500', 'ring-offset-2');
-      setTimeout(function () { card.classList.remove('ring-2', 'ring-teal-500', 'ring-offset-2'); }, 2500);
-    }
+    if (card) card.scrollIntoView({ behavior: 'smooth', block: 'center' });
   });
 
   document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape' && !modal.classList.contains('hidden')) closeModal();
+    if (e.key === 'Escape') {
+      if (modal && !modal.classList.contains('hidden')) closeModal();
+      hidePreview();
+    }
+    if (e.key === '/' && document.activeElement !== searchInput && searchInput) {
+      e.preventDefault();
+      searchInput.focus();
+      searchInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
   });
 
   loadTechniques().then(applyFiltersFromURL);

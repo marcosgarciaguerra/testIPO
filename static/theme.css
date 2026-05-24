@@ -109,3 +109,63 @@ body.page-home {
   outline: 2px solid var(--brand-light);
   outline-offset: 2px;
 }
+
+/* Animación para el Empty State Radar */
+@keyframes radar-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(15, 118, 110, 0.4);
+    transform: scale(1);
+  }
+  70% {
+    box-shadow: 0 0 0 15px rgba(15, 118, 110, 0);
+    transform: scale(1.05);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(15, 118, 110, 0);
+    transform: scale(1);
+  }
+}
+
+.animate-radar {
+  animation: radar-pulse 2s infinite ease-in-out;
+}
+
+/* Animación de Entrada Suave */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Transiciones para Spotlight del Onboarding */
+#onboarding-spotlight {
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+#onboarding-card {
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+/* Personalización del scrollbar en Drawer móvil */
+#filters-section::-webkit-scrollbar {
+  width: 6px;
+}
+
+#filters-section::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+#filters-section::-webkit-scrollbar-thumb {
+  background-color: rgb(212 212 210);
+  border-radius: 9999px;
+}
+

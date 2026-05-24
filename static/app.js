@@ -307,6 +307,7 @@
       });
     });
     applyFilters();
+    closeFiltersDrawer();
   }
 
   FILTER_NAMES.forEach(function (name) {
@@ -329,7 +330,94 @@
     });
   }
 
-  /* Wizard */
+  /* Drawer de Filtros Móviles */
+  var filtersSection = document.getElementById('filters-section');
+  var mobileFilterToggle = document.getElementById('mobile-filter-toggle');
+  var filterDrawerBackdrop = document.getElementById('filter-drawer-backdrop');
+  var closeFiltersMobile = document.getElementById('close-filters-mobile');
+  var applyFiltersMobile = document.getElementById('apply-filters-mobile');
+
+  function openFiltersDrawer() {
+    if (!filtersSection) return;
+    document.body.classList.add('overflow-hidden');
+    filtersSection.classList.remove('translate-x-full');
+    filtersSection.classList.add('translate-x-0');
+    if (filterDrawerBackdrop) {
+      filterDrawerBackdrop.classList.remove('hidden');
+      filterDrawerBackdrop.classList.add('block');
+      requestAnimationFrame(function () {
+        filterDrawerBackdrop.classList.remove('opacity-0', 'pointer-events-none');
+        filterDrawerBackdrop.classList.add('opacity-100', 'pointer-events-auto');
+      });
+    }
+  }
+
+  function closeFiltersDrawer() {
+    if (!filtersSection) return;
+    document.body.classList.remove('overflow-hidden');
+    filtersSection.classList.add('translate-x-full');
+    filtersSection.classList.remove('translate-x-0');
+    if (filterDrawerBackdrop) {
+      filterDrawerBackdrop.classList.remove('opacity-100', 'pointer-events-auto');
+      filterDrawerBackdrop.classList.add('opacity-0', 'pointer-events-none');
+      setTimeout(function () {
+        filterDrawerBackdrop.classList.add('hidden');
+        filterDrawerBackdrop.classList.remove('block');
+      }, 300);
+    }
+  }
+
+  if (mobileFilterToggle) mobileFilterToggle.addEventListener('click', openFiltersDrawer);
+  if (closeFiltersMobile) closeFiltersMobile.addEventListener('click', closeFiltersDrawer);
+  if (filterDrawerBackdrop) filterDrawerBackdrop.addEventListener('click', closeFiltersDrawer);
+  if (applyFiltersMobile) applyFiltersMobile.addEventListener('click', closeFiltersDrawer);
+
+  /* Wizard Microcopy / Acompañamiento en Directo */
+  var wizardTipoSelect = document.getElementById('wizard-tipo');
+  var wizardDurationSelect = document.getElementById('wizard-duration');
+  var wizardResultsSelect = document.getElementById('wizard-results');
+
+  var wizardTipoHelp = document.getElementById('wizard-tipo-help');
+  var wizardDurationHelp = document.getElementById('wizard-duration-help');
+  var wizardResultsHelp = document.getElementById('wizard-results-help');
+
+  var tipoExpls = {
+    '': 'Selecciona un tipo para ver su definición y entender qué hace.',
+    'insight': '💡 <strong>Insight (Descubrimiento y Diseño)</strong>: Métodos para descubrir problemas latentes y diseñar soluciones visualizando detalladamente el comportamiento (ej. Heurísticas, Personas).',
+    'inquiry': '💬 <strong>Inquiry (Indagación)</strong>: Técnicas de investigación para hablar con usuarios y profundizar en sus opiniones y deseos (ej. Entrevistas, Encuestas).',
+    'testing': '🧪 <strong>Testing (Pruebas)</strong>: Métodos prácticos para evaluar la usabilidad del producto de forma empírica con usuarios reales (ej. Test de Usabilidad, Pensamiento en Voz Alta).'
+  };
+
+  var durationExpls = {
+    '': 'Selecciona el tiempo estimado del que dispones para ejecutar la técnica.',
+    '30min': '⏱️ <strong>30 minutos</strong>: Técnicas exprés e inmediatas de muy bajo coste temporal y sencillas de realizar.',
+    '1h': '🕐 <strong>1 hora</strong>: Métodos estructurados de duración estándar por sesión de trabajo.',
+    '1h+': '⏳ <strong>Más de 1 hora</strong>: Técnicas de análisis profundo que requieren sesiones más extensas o múltiples fases.'
+  };
+
+  var resultsExpls = {
+    '': 'Selecciona el tipo de datos que necesitas recolectar del usuario.',
+    'cuantitativos': '📊 <strong>Cuantitativos</strong>: Datos numéricos, porcentajes y métricas estadísticas que responden a "¿Cuántos?" o "¿Cuánto tiempo tarda?" (ej. Cuestionario SUS, Analítica).',
+    'cualitativos': '📝 <strong>Cualitativos</strong>: Información descriptiva, opiniones subjetivas e interpretaciones que responden a "¿Por qué ocurre?" (ej. Entrevistas, Test de Usabilidad).'
+  };
+
+  if (wizardTipoSelect && wizardTipoHelp) {
+    wizardTipoSelect.addEventListener('change', function () {
+      wizardTipoHelp.innerHTML = tipoExpls[wizardTipoSelect.value] || tipoExpls[''];
+    });
+  }
+  if (wizardDurationSelect && wizardDurationHelp) {
+    wizardDurationSelect.addEventListener('change', function () {
+      wizardDurationHelp.innerHTML = durationExpls[wizardDurationSelect.value] || durationExpls[''];
+    });
+  }
+  if (wizardResultsSelect && wizardResultsHelp) {
+    wizardResultsSelect.addEventListener('change', function () {
+      wizardResultsHelp.innerHTML = resultsExpls[wizardResultsSelect.value] || resultsExpls[''];
+    });
+  }
+
+  /* Wizard Logic */
   var wizStep = 1;
   var wizSteps = document.querySelectorAll('.wizard-step');
   var wizPrev = document.getElementById('wizard-prev');
@@ -389,6 +477,9 @@
       document.getElementById('wizard-tipo').value = '';
       document.getElementById('wizard-duration').value = '';
       document.getElementById('wizard-results').value = '';
+      if (wizardTipoSelect) wizardTipoSelect.dispatchEvent(new Event('change'));
+      if (wizardDurationSelect) wizardDurationSelect.dispatchEvent(new Event('change'));
+      if (wizardResultsSelect) wizardResultsSelect.dispatchEvent(new Event('change'));
       updateWizardUI();
     });
   }
@@ -470,9 +561,207 @@
     if (card) card.scrollIntoView({ behavior: 'smooth', block: 'center' });
   });
 
+  /* Sistema de Onboarding Interactivo (Tour de 3 pasos) */
+  var onboardingOverlay = document.getElementById('onboarding-overlay');
+  var onboardingSpotlight = document.getElementById('onboarding-spotlight');
+  var onboardingCard = document.getElementById('onboarding-card');
+  var tourTitle = document.getElementById('tour-title');
+  var tourBody = document.getElementById('tour-body');
+  var tourStepBadge = document.getElementById('tour-step-badge');
+  var tourPrev = document.getElementById('tour-prev');
+  var tourNext = document.getElementById('tour-next');
+  var tourSkip = document.getElementById('tour-skip');
+  var startTourBtn = document.getElementById('start-tour-btn');
+
+  var currentTourStep = 0;
+  var isTourActive = false;
+
+  function getTourSteps() {
+    var isMobile = window.innerWidth < 640;
+    return [
+      {
+        title: "1. Buscador de Técnicas",
+        body: "Encuentra métodos al instante escribiendo palabras clave como 'heurística', 'card sorting' o 'cuestionario' en esta barra.",
+        targetId: "search",
+        placement: "bottom"
+      },
+      {
+        title: "2. Filtros de Catálogo",
+        body: isMobile 
+          ? "Usa este botón flotante para desplegar los filtros y refinar tu búsqueda según el número de personas, modalidad, tipo o duración en móviles de manera ordenada."
+          : "Refina la lista de técnicas según tus necesidades exactas: número de personas, modalidad, tipo o duración del ejercicio.",
+        targetId: isMobile ? "mobile-filter-toggle" : "filters-heading",
+        placement: isMobile ? "top" : "bottom"
+      },
+      {
+        title: "3. Recomendador de Usabilidad",
+        body: "¿Tienes dudas? Responde tres preguntas sencillas en este panel inteligente y te recomendaremos el método idóneo para tu caso.",
+        targetId: "wizard-heading",
+        placement: "bottom"
+      }
+    ];
+  }
+
+  function startTour() {
+    isTourActive = true;
+    currentTourStep = 0;
+    
+    if (onboardingOverlay) {
+      onboardingOverlay.classList.remove('hidden');
+      setTimeout(function () {
+        onboardingOverlay.classList.remove('opacity-0', 'pointer-events-none');
+        onboardingOverlay.classList.add('opacity-100', 'pointer-events-auto');
+      }, 10);
+    }
+    if (onboardingSpotlight) onboardingSpotlight.classList.remove('hidden');
+    if (onboardingCard) onboardingCard.classList.remove('hidden');
+
+    renderTourStep();
+  }
+
+  function endTour(completed) {
+    isTourActive = false;
+    if (onboardingOverlay) {
+      onboardingOverlay.classList.remove('opacity-100', 'pointer-events-auto');
+      onboardingOverlay.classList.add('opacity-0', 'pointer-events-none');
+      setTimeout(function () { onboardingOverlay.classList.add('hidden'); }, 300);
+    }
+    if (onboardingSpotlight) onboardingSpotlight.classList.add('hidden');
+    if (onboardingCard) onboardingCard.classList.add('hidden');
+
+    if (completed) {
+      localStorage.setItem('ipo_onboarding_completed', 'true');
+    }
+  }
+
+  function renderTourStep() {
+    if (!isTourActive) return;
+    var steps = getTourSteps();
+    var step = steps[currentTourStep];
+    if (!step) return;
+
+    // Update texts
+    if (tourTitle) tourTitle.textContent = step.title;
+    if (tourBody) tourBody.textContent = step.body;
+    if (tourStepBadge) tourStepBadge.textContent = "Paso " + (currentTourStep + 1) + " de " + steps.length;
+
+    // Update Dots
+    [1, 2, 3].forEach(function (n) {
+      var dot = document.getElementById('tour-dot-' + n);
+      if (dot) {
+        dot.classList.toggle('bg-brand', n === (currentTourStep + 1));
+        dot.classList.toggle('bg-stone-200', n !== (currentTourStep + 1));
+      }
+    });
+
+    // Update Buttons
+    if (tourPrev) {
+      tourPrev.classList.toggle('invisible', currentTourStep === 0);
+    }
+    if (tourNext) {
+      tourNext.textContent = currentTourStep === (steps.length - 1) ? "Finalizar" : "Siguiente";
+    }
+
+    // Target Element spotlight
+    var targetEl = document.getElementById(step.targetId);
+    if (targetEl) {
+      // For mobile drawer toggle target, make sure drawer is CLOSED so target is visible
+      if (step.targetId === 'mobile-filter-toggle') {
+        closeFiltersDrawer();
+      }
+      
+      targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      
+      // Give browser time to finish scrolling
+      setTimeout(function () {
+        positionTourSpotlight(targetEl, step.placement);
+      }, 350);
+    } else {
+      endTour(false);
+    }
+  }
+
+  function positionTourSpotlight(targetEl, placement) {
+    if (!isTourActive || !onboardingSpotlight || !onboardingCard || !targetEl) return;
+
+    var rect = targetEl.getBoundingClientRect();
+    var padding = 8;
+
+    // Spotlight layout
+    onboardingSpotlight.style.left = Math.round(rect.left - padding) + 'px';
+    onboardingSpotlight.style.top = Math.round(rect.top - padding) + 'px';
+    onboardingSpotlight.style.width = Math.round(rect.width + padding * 2) + 'px';
+    onboardingSpotlight.style.height = Math.round(rect.height + padding * 2) + 'px';
+
+    // Position Card
+    var cardWidth = onboardingCard.offsetWidth || 352;
+    var cardHeight = onboardingCard.offsetHeight || 190;
+    var viewportWidth = window.innerWidth;
+    var viewportHeight = window.innerHeight;
+
+    var left = rect.left + (rect.width - cardWidth) / 2;
+    var top = 0;
+
+    if (placement === 'bottom') {
+      top = rect.bottom + 16;
+    } else if (placement === 'top') {
+      top = rect.top - cardHeight - 16;
+    }
+
+    // Boundaries check
+    if (left < 12) left = 12;
+    if (left + cardWidth > viewportWidth - 12) left = viewportWidth - cardWidth - 12;
+
+    if (top < 12) top = 12;
+    if (top + cardHeight > viewportHeight - 12) {
+      // Flip placement if overflows bottom
+      top = rect.top - cardHeight - 16;
+      if (top < 12) top = rect.bottom + 16;
+    }
+
+    onboardingCard.style.left = Math.round(left) + 'px';
+    onboardingCard.style.top = Math.round(top) + 'px';
+  }
+
+  // Hook up onboarding event listeners
+  if (tourNext) {
+    tourNext.addEventListener('click', function () {
+      var steps = getTourSteps();
+      if (currentTourStep < steps.length - 1) {
+        currentTourStep++;
+        renderTourStep();
+      } else {
+        endTour(true);
+      }
+    });
+  }
+
+  if (tourPrev) {
+    tourPrev.addEventListener('click', function () {
+      if (currentTourStep > 0) {
+        currentTourStep--;
+        renderTourStep();
+      }
+    });
+  }
+
+  if (tourSkip) {
+    tourSkip.addEventListener('click', function () {
+      endTour(true);
+    });
+  }
+
+  if (startTourBtn) {
+    startTourBtn.addEventListener('click', function () {
+      startTour();
+    });
+  }
+
   document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape') {
       if (modal && !modal.classList.contains('hidden')) closeModal();
+      if (isTourActive) endTour(false);
+      closeFiltersDrawer();
       hidePreview();
     }
     if (e.key === '/' && document.activeElement !== searchInput && searchInput) {
@@ -482,5 +771,32 @@
     }
   });
 
-  loadTechniques().then(applyFiltersFromURL);
+  window.addEventListener('resize', function () {
+    if (hoveredCard && previewFloat && !previewFloat.classList.contains('hidden')) {
+      positionPreview(hoveredCard);
+    }
+    if (isTourActive) {
+      var steps = getTourSteps();
+      var targetEl = document.getElementById(steps[currentTourStep].targetId);
+      if (targetEl) positionTourSpotlight(targetEl, steps[currentTourStep].placement);
+    }
+  });
+
+  window.addEventListener('scroll', function () {
+    if (hoveredCard && previewFloat && !previewFloat.classList.contains('hidden')) {
+      positionPreview(hoveredCard);
+    }
+    if (isTourActive) {
+      var steps = getTourSteps();
+      var targetEl = document.getElementById(steps[currentTourStep].targetId);
+      if (targetEl) positionTourSpotlight(targetEl, steps[currentTourStep].placement);
+    }
+  }, true);
+
+  loadTechniques().then(applyFiltersFromURL).then(function () {
+    // Check if onboarding needs to auto-run
+    if (!localStorage.getItem('ipo_onboarding_completed')) {
+      setTimeout(startTour, 1200);
+    }
+  });
 })();

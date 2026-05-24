@@ -50,24 +50,7 @@
 
   function buildPreviewHTML(t) {
     if (!t) return '';
-    var img = t.imageURL || '/static/images/' + t.id + '.svg';
-    var steps = (t.howTo || []).slice(0, 3).map(function (s, i) {
-      return '<li>' + escapeHtml(s) + '</li>';
-    }).join('');
-    return (
-      '<img src="' + escapeHtml(img) + '" alt="" class="w-full h-36 object-cover rounded-lg mb-4">' +
-      '<h3 class="text-lg font-bold text-slate-900">' + escapeHtml(t.name) + '</h3>' +
-      '<p class="mt-2 text-xs font-bold uppercase tracking-wide text-brand">Introducción</p>' +
-      '<p class="mt-1">' + escapeHtml(t.introduction) + '</p>' +
-      '<p class="mt-3 text-xs font-bold uppercase tracking-wide text-brand">Objetivo</p>' +
-      '<p class="mt-1">' + escapeHtml(t.objective) + '</p>' +
-      (steps ? '<p class="mt-3 text-xs font-bold uppercase tracking-wide text-brand">Cómo ejecutarla</p><ol class="mt-1 list-decimal list-inside space-y-1">' + steps + '</ol>' : '') +
-      '<div class="mt-4 flex flex-wrap gap-1 text-xs">' +
-        '<span class="rounded-full bg-brand-muted text-brand px-2 py-0.5 font-semibold">' + escapeHtml(label(LABELS.tipo, t.tipo)) + '</span>' +
-        '<span class="rounded-full bg-stone-100 text-stone-600 px-2 py-0.5 font-semibold">' + escapeHtml(label(LABELS.duration, t.duration)) + '</span>' +
-      '</div>' +
-      '<a href="/tecnicas/' + escapeHtml(t.id) + '" class="mt-4 block w-full text-center rounded-xl bg-brand text-white font-bold py-2.5 text-sm hover:bg-brand-deep pointer-events-auto">Abrir ficha completa</a>'
-    );
+    return '<p class="text-stone-700 font-medium leading-relaxed">' + escapeHtml(t.introduction) + '</p>';
   }
 
   function positionPreview(card) {
@@ -148,6 +131,19 @@
     article.dataset.introduction = t.introduction || '';
     article.dataset.search = searchText;
     article.setAttribute('aria-label', 'Técnica: ' + t.name);
+    var filtersHtml = '<div class="mt-2 flex flex-wrap gap-1.5 text-xs font-semibold" data-role="card-filters">';
+    if (t.tipo) filtersHtml += '<span class="rounded px-2.5 py-1 transition-all duration-200" data-filter-name="tipo" data-filter-value="' + escapeHtml(t.tipo) + '" title="Tipo">' + escapeHtml(label(LABELS.tipo, t.tipo)) + '</span>';
+    if (t.duration) filtersHtml += '<span class="rounded px-2.5 py-1 transition-all duration-200" data-filter-name="duration" data-filter-value="' + escapeHtml(t.duration) + '" title="Duración">' + escapeHtml(label(LABELS.duration, t.duration)) + '</span>';
+    if (t.modality) {
+      var modLabels = t.modality.split(',').map(function (m) { return label(LABELS.modality, m.trim()); }).join(', ');
+      filtersHtml += '<span class="rounded px-2.5 py-1 transition-all duration-200" data-filter-name="modality" data-filter-value="' + escapeHtml(t.modality) + '" title="Modalidad">' + escapeHtml(modLabels) + '</span>';
+    }
+    if (t.people) filtersHtml += '<span class="rounded px-2.5 py-1 transition-all duration-200" data-filter-name="people" data-filter-value="' + escapeHtml(t.people) + '" title="Personas">' + escapeHtml(label(LABELS.people, t.people)) + ' Pers</span>';
+    if (t.results) {
+      var resLabels = t.results.split(',').map(function (r) { return label(LABELS.results, r.trim()); }).join(', ');
+      filtersHtml += '<span class="rounded px-2.5 py-1 transition-all duration-200" data-filter-name="results" data-filter-value="' + escapeHtml(t.results) + '" title="Resultados">' + escapeHtml(resLabels) + '</span>';
+    }
+    filtersHtml += '</div>';
 
     article.innerHTML =
       '<div class="aspect-[5/3] bg-stone-100 overflow-hidden">' +
@@ -155,7 +151,11 @@
       '</div>' +
       '<div class="flex flex-col flex-1 p-5">' +
         '<h3 class="text-lg font-bold text-stone-900">' + escapeHtml(t.name) + '</h3>' +
-        '<p class="mt-2 text-sm text-stone-600 line-clamp-3 flex-1">' + escapeHtml(t.objective) + '</p>' +
+        '<p class="mt-3 text-sm text-stone-600 line-clamp-3 flex-1">' + escapeHtml(t.introduction) + '</p>' +
+        '<div class="mt-4 pt-3 border-t border-stone-100">' +
+          '<p class="text-[10px] font-extrabold uppercase tracking-wider text-stone-400 mb-2">Filtros coincidentes:</p>' +
+          filtersHtml +
+        '</div>' +
         '<span class="mt-4 w-full text-center rounded-xl bg-brand-muted text-brand font-bold text-sm py-2.5 group-hover:bg-brand group-hover:text-white transition-colors">Ver ficha</span>' +
       '</div>';
 
@@ -245,18 +245,19 @@
     var fieldLabels = { people: 'N. personas', modality: 'Modalidad', tipo: 'Tipo', duration: 'Duración', results: 'Resultados' };
     FILTER_NAMES.forEach(function (name) {
       var v = getFilter(name);
-      if (v) chips.push(fieldLabels[name] + ': ' + label(LABELS[name], v));
+      if (v) chips.push({ text: fieldLabels[name] + ': ' + label(LABELS[name], v), name: name });
     });
     var q = (searchInput.value || '').trim();
-    if (q) chips.push('Búsqueda: “' + escapeHtml(q) + '”');
+    if (q) chips.push({ text: 'Búsqueda: “' + escapeHtml(q) + '”', name: 'search' });
     if (!chips.length) {
       activeFiltersEl.classList.add('hidden');
       activeFiltersEl.innerHTML = '';
       return;
     }
     activeFiltersEl.classList.remove('hidden');
-    activeFiltersEl.innerHTML = chips.map(function (text) {
-      return '<span class="inline-flex rounded-full bg-brand-muted text-brand px-3 py-1 text-xs font-semibold">' + text + '</span>';
+    activeFiltersEl.innerHTML = chips.map(function (chip) {
+      var bgCol = chip.name === 'people' ? 'bg-[#3b82f6]/20 text-[#3b82f6]' : chip.name === 'modality' ? 'bg-[#10b981]/20 text-[#10b981]' : chip.name === 'tipo' ? 'bg-[#f59e0b]/20 text-[#f59e0b]' : chip.name === 'duration' ? 'bg-[#8b5cf6]/20 text-[#8b5cf6]' : chip.name === 'results' ? 'bg-[#ec4899]/20 text-[#ec4899]' : 'bg-brand-muted text-brand';
+      return '<span class="inline-flex rounded-full px-3 py-1 text-xs font-semibold ' + bgCol + '">' + chip.text + '</span>';
     }).join('');
   }
 
@@ -285,12 +286,51 @@
     applyFilters();
   }
 
+  function updateCardFilters(card) {
+    var container = card.querySelector('[data-role="card-filters"]');
+    if (!container) return;
+    var activeFilters = {
+      people: getFilter('people'),
+      modality: getFilter('modality'),
+      tipo: getFilter('tipo'),
+      duration: getFilter('duration'),
+      results: getFilter('results')
+    };
+    var anyActive = activeFilters.people || activeFilters.modality || activeFilters.tipo || activeFilters.duration || activeFilters.results;
+    var spans = container.querySelectorAll('[data-filter-name]');
+    spans.forEach(function (span) {
+      var name = span.getAttribute('data-filter-name');
+      var val = span.getAttribute('data-filter-value');
+      var sel = activeFilters[name];
+      var isMatch = false;
+      if (sel) {
+        if (name === 'modality' || name === 'results') {
+          isMatch = val.split(',').map(function (x) { return x.trim(); }).indexOf(sel) >= 0;
+        } else {
+          isMatch = (val === sel);
+        }
+      }
+      if (isMatch) {
+        var bgCol = name === 'people' ? 'bg-[#3b82f6]' : name === 'modality' ? 'bg-[#10b981]' : name === 'tipo' ? 'bg-[#f59e0b]' : name === 'duration' ? 'bg-[#8b5cf6]' : 'bg-[#ec4899]';
+        span.className = 'rounded ' + bgCol + ' text-white px-2.5 py-1 shadow-sm font-bold scale-105 transition-all duration-200';
+      } else if (anyActive) {
+        span.className = 'rounded bg-stone-100 text-stone-400 border border-stone-200/50 opacity-40 px-2.5 py-1 scale-95 transition-all duration-200';
+      } else {
+        var textCol = name === 'people' ? 'text-[#3b82f6]' : name === 'modality' ? 'text-[#10b981]' : name === 'tipo' ? 'text-[#f59e0b]' : name === 'duration' ? 'text-[#8b5cf6]' : 'text-[#ec4899]';
+        span.className = 'rounded bg-stone-100 ' + textCol + ' font-medium px-2.5 py-1 transition-all duration-200';
+      }
+    });
+  }
+
   function applyFilters() {
     var visible = 0;
     cards.forEach(function (card) {
       var show = cardVisible(card);
       card.classList.toggle('hidden', !show);
-      if (show) visible++;
+      if (show) {
+        visible++;
+        updateCardFilters(card);
+      }
     });
     emptyState.classList.toggle('hidden', visible > 0);
     cardsGrid.classList.toggle('hidden', visible === 0);

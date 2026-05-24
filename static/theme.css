@@ -80,9 +80,33 @@ body.page-home {
   transition: background 0.15s, color 0.15s, border-color 0.15s;
 }
 
-.filter-pill input:checked + span {
-  background: var(--brand-mid);
-  border-color: var(--brand-mid);
+.filter-pill[data-category="people"] input:checked + span {
+  background: #3b82f6; /* blue-500 */
+  border-color: #3b82f6;
+  color: #fff;
+}
+
+.filter-pill[data-category="modality"] input:checked + span {
+  background: #10b981; /* emerald-500 */
+  border-color: #10b981;
+  color: #fff;
+}
+
+.filter-pill[data-category="tipo"] input:checked + span {
+  background: #f59e0b; /* amber-500 */
+  border-color: #f59e0b;
+  color: #fff;
+}
+
+.filter-pill[data-category="duration"] input:checked + span {
+  background: #8b5cf6; /* violet-500 */
+  border-color: #8b5cf6;
+  color: #fff;
+}
+
+.filter-pill[data-category="results"] input:checked + span {
+  background: #ec4899; /* pink-500 */
+  border-color: #ec4899;
   color: #fff;
 }
 

@@ -20,8 +20,8 @@
 
   <main class="max-w-5xl mx-auto px-4 py-8 space-y-8">
 
-    <section id="login-panel" class="rounded-xl bg-white border border-slate-200 p-6 shadow-sm max-w-md">
-      <h2 class="font-semibold text-lg">Iniciar sesión</h2>
+    <section id="login-panel" class="rounded-xl bg-white border border-slate-200 p-6 shadow-sm max-w-md" aria-labelledby="login-heading">
+      <h2 id="login-heading" class="font-semibold text-lg">Iniciar sesión</h2>
       <form id="login-form" class="mt-4 space-y-3">
         <label class="block text-sm">
           <span class="font-medium">Usuario</span>
@@ -46,7 +46,7 @@
 
       <section id="editor" class="hidden rounded-xl bg-white border border-slate-200 p-6 shadow-sm">
         <h3 id="editor-title" class="font-semibold text-lg mb-4">Editar técnica</h3>
-        <form id="technique-form" class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm" novalidate>
+        <form id="technique-form" class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm" aria-describedby="form-msg" novalidate>
           <label class="sm:col-span-2">ID (slug)
             <input name="id" required pattern="[a-z0-9-]+" class="mt-1 w-full rounded border px-3 py-2">
           </label>

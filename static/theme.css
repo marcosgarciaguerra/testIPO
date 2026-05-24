@@ -48,7 +48,7 @@ body.page-home {
 }
 
 .search-hero input[type="search"]::placeholder {
-  color: #a8a29e;
+  color: #78716c;
 }
 
 .search-hero input[type="search"]:focus {
@@ -84,30 +84,40 @@ body.page-home {
   background: #3b82f6; /* blue-500 */
   border-color: #3b82f6;
   color: #fff;
+  font-weight: 700;
+  box-shadow: inset 0 0 0 2px #fff;
 }
 
 .filter-pill[data-category="modality"] input:checked + span {
   background: #10b981; /* emerald-500 */
   border-color: #10b981;
   color: #fff;
+  font-weight: 700;
+  box-shadow: inset 0 0 0 2px #fff;
 }
 
 .filter-pill[data-category="tipo"] input:checked + span {
   background: #f59e0b; /* amber-500 */
   border-color: #f59e0b;
   color: #fff;
+  font-weight: 700;
+  box-shadow: inset 0 0 0 2px #fff;
 }
 
 .filter-pill[data-category="duration"] input:checked + span {
   background: #8b5cf6; /* violet-500 */
   border-color: #8b5cf6;
   color: #fff;
+  font-weight: 700;
+  box-shadow: inset 0 0 0 2px #fff;
 }
 
 .filter-pill[data-category="results"] input:checked + span {
   background: #ec4899; /* pink-500 */
   border-color: #ec4899;
   color: #fff;
+  font-weight: 700;
+  box-shadow: inset 0 0 0 2px #fff;
 }
 
 .filter-pill input:focus-visible + span {
@@ -127,6 +137,11 @@ body.page-home {
 .technique-card:hover {
   transform: translateY(-2px);
   box-shadow: var(--shadow-lg);
+}
+
+.technique-card:focus-visible {
+  outline: 2px solid var(--brand-light);
+  outline-offset: 2px;
 }
 
 .technique-card.is-highlighted {

@@ -7,9 +7,11 @@
 
   <header class="relative overflow-hidden bg-gradient-to-br from-brand-deep via-brand to-teal-600 text-white">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 py-10">
-      <a href="/" class="inline-flex items-center gap-1 text-sm font-semibold text-teal-100 hover:text-white focus:underline">
-        <span aria-hidden="true">←</span> Volver al catálogo
-      </a>
+      <nav aria-label="Navegación de retorno">
+        <a href="/" class="inline-flex items-center gap-1 text-sm font-semibold text-teal-100 hover:text-white focus:underline">
+          <span aria-hidden="true">←</span> Volver al catálogo
+        </a>
+      </nav>
       <div class="mt-6 flex flex-col sm:flex-row items-start gap-6">
         <img src="{{ .Technique.ImageURL }}" alt="{{ .Technique.ImageAlt }}" class="w-full sm:w-52 h-36 sm:h-36 object-cover rounded-2xl border-2 border-white/30 shadow-xl ring-4 ring-white/10">
         <div>
@@ -71,7 +73,7 @@
     </p>
   </main>
 
-  <footer class="border-t border-stone-200 bg-white mt-12">
+  <footer class="border-t border-stone-200 bg-white mt-12" aria-label="Pie de página">
     <p class="max-w-4xl mx-auto px-4 py-6 text-center text-sm text-stone-500">IPO · Técnicas de Usabilidad</p>
   </footer>
 </body>

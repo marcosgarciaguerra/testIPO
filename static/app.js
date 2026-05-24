@@ -130,6 +130,8 @@
     article.dataset.results = t.results || '';
     article.dataset.introduction = t.introduction || '';
     article.dataset.search = searchText;
+    article.setAttribute('role', 'link');
+    article.setAttribute('tabindex', '0');
     article.setAttribute('aria-label', 'Técnica: ' + t.name);
     var filtersHtml = '<div class="mt-2 flex flex-wrap gap-1.5 text-xs font-semibold" data-role="card-filters">';
     if (t.tipo) filtersHtml += '<span class="rounded px-2.5 py-1 transition-all duration-200" data-filter-name="tipo" data-filter-value="' + escapeHtml(t.tipo) + '" title="Tipo">' + escapeHtml(label(LABELS.tipo, t.tipo)) + '</span>';
@@ -161,6 +163,12 @@
 
     article.addEventListener('click', function () {
       window.location.href = '/tecnicas/' + t.id;
+    });
+    article.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        window.location.href = '/tecnicas/' + t.id;
+      }
     });
 
     return article;
@@ -548,6 +556,31 @@
   var modalDetailLink = document.getElementById('modal-detail-link');
   var recommendedId = null;
 
+  var trapFocusHandler = null;
+
+  function trapFocus(el) {
+    var focusableEls = el.querySelectorAll('a[href]:not([disabled]), button:not([disabled]), textarea:not([disabled]), input[type="text"]:not([disabled]), input[type="radio"]:not([disabled]), input[type="checkbox"]:not([disabled]), select:not([disabled])');
+    var firstFocusableEl = focusableEls[0];
+    var lastFocusableEl = focusableEls[focusableEls.length - 1];
+    var KEYCODE_TAB = 9;
+
+    return function(e) {
+      var isTabPressed = (e.key === 'Tab' || e.keyCode === KEYCODE_TAB);
+      if (!isTabPressed) return;
+      if (e.shiftKey) { /* shift + tab */
+        if (document.activeElement === firstFocusableEl) {
+          lastFocusableEl.focus();
+          e.preventDefault();
+        }
+      } else { /* tab */
+        if (document.activeElement === lastFocusableEl) {
+          firstFocusableEl.focus();
+          e.preventDefault();
+        }
+      }
+    };
+  }
+
   function openModal(best, second, reasons) {
     recommendedId = best.dataset.id;
     modalName.textContent = best.querySelector('h3').textContent;
@@ -562,11 +595,19 @@
     modalDetailLink.href = '/tecnicas/' + recommendedId;
     modal.classList.remove('hidden');
     document.body.classList.add('overflow-hidden');
+    trapFocusHandler = trapFocus(modal);
+    document.addEventListener('keydown', trapFocusHandler);
+    setTimeout(function() { modalDetailLink.focus(); }, 100);
   }
 
   function closeModal() {
     modal.classList.add('hidden');
     document.body.classList.remove('overflow-hidden');
+    if (trapFocusHandler) {
+      document.removeEventListener('keydown', trapFocusHandler);
+      trapFocusHandler = null;
+    }
+    wizSubmit.focus();
   }
 
   document.querySelectorAll('[data-close-modal]').forEach(function (el) {

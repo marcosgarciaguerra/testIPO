@@ -39,6 +39,17 @@
     el.scrollIntoView(opts);
   }
 
+  function assetPath(path) {
+    if (!path) return '';
+    if (path.indexOf('/static/') === 0) return path.substring(1);
+    if (path.charAt(0) === '/') return path.substring(1);
+    return path;
+  }
+
+  function detailUrl(id) {
+    return 'detail.html?id=' + encodeURIComponent(id);
+  }
+
   function escapeHtml(s) {
     var d = document.createElement('div');
     d.textContent = s || '';
@@ -128,13 +139,13 @@
   }
 
   function buildCard(t) {
-    var img = t.imageURL || '/static/images/' + t.id + '.svg';
+    var img = assetPath(t.imageURL || 'static/images/' + t.id + '.svg');
     var searchText = [t.name, t.objective, t.introduction, t.lifecycle, t.methodType, t.qualQuant, t.tipo, t.people]
       .concat(t.howTo || [])
       .join(' ');
     var link = document.createElement('a');
     link.id = 'card-' + t.id;
-    link.href = '/tecnicas/' + t.id;
+    link.href = detailUrl(t.id);
     link.className = 'technique-card flex flex-col overflow-hidden cursor-pointer group';
     link.dataset.id = t.id;
     link.dataset.people = t.people || '';
@@ -230,7 +241,7 @@
   async function loadTechniques() {
     if (cardsLoading) cardsLoading.classList.remove('hidden');
     try {
-      var res = await fetch('/api/techniques');
+      var res = await fetch('data/techniques.json');
       if (!res.ok) throw new Error('fetch failed');
       techniques = await res.json();
       renderCards(techniques);
@@ -652,7 +663,7 @@
       modalSecond.classList.remove('hidden');
       modalSecond.textContent = 'Alternativa: ' + second.card.querySelector('h3').textContent;
     } else if (modalSecond) modalSecond.classList.add('hidden');
-    modalDetailLink.href = '/tecnicas/' + recommendedId;
+    modalDetailLink.href = detailUrl(recommendedId);
     modal.classList.remove('hidden');
     document.body.classList.add('overflow-hidden');
     trapFocusHandler = trapFocus(modal);

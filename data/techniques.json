@@ -9,7 +9,7 @@
     "qualQuant": "Cualitativo",
     "requirements": "1 a 2 horas, 3–5 evaluadores expertos.",
     "imageAlt": "Evaluación heurística de usabilidad",
-    "imageURL": "/static/images/heuristica.png",
+    "imageURL": "static/images/heuristica.png",
     "howTo": [
       "Selecciona 3–5 evaluadores con conocimiento de usabilidad.",
       "Define el alcance (pantallas o flujos a revisar).",
@@ -32,7 +32,7 @@
     "qualQuant": "Cualitativo y cuantitativo",
     "requirements": "15 a 30 usuarios representativos.",
     "imageAlt": "Card sorting para arquitectura de información",
-    "imageURL": "/static/images/card-sorting.svg",
+    "imageURL": "static/images/card-sorting.svg",
     "howTo": [
       "Prepara tarjetas con conceptos o etiquetas del producto.",
       "Recluta usuarios representativos del público objetivo.",
@@ -55,7 +55,7 @@
     "qualQuant": "Cuantitativo",
     "requirements": "Menos de 5 minutos.",
     "imageAlt": "Test de los cinco segundos",
-    "imageURL": "/static/images/cinco-segundos.svg",
+    "imageURL": "static/images/cinco-segundos.svg",
     "howTo": [
       "Muestra el diseño o mockup durante 5 segundos.",
       "Oculta la pantalla y pregunta qué recuerda el usuario.",
@@ -78,7 +78,7 @@
     "qualQuant": "Cualitativo",
     "requirements": "30–45 minutos, 5–8 usuarios.",
     "imageAlt": "Protocolo think aloud",
-    "imageURL": "/static/images/think-aloud.svg",
+    "imageURL": "static/images/think-aloud.svg",
     "howTo": [
       "Define tareas concretas a realizar en el sistema.",
       "Pide al usuario que verbalice todo lo que piensa mientras actúa.",
@@ -101,7 +101,7 @@
     "qualQuant": "Cuantitativo",
     "requirements": "2 a 5 minutos, idealmente más de 30 usuarios.",
     "imageAlt": "Cuestionario SUS de usabilidad",
-    "imageURL": "/static/images/sus.svg",
+    "imageURL": "static/images/sus.svg",
     "howTo": [
       "Aplica el cuestionario SUS estándar de 10 ítems tras usar el producto.",
       "Calcula la puntuación según la fórmula oficial (0–100).",

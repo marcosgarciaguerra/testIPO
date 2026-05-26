@@ -1,10 +1,32 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  {{template "head" .}}
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Catálogo de técnicas de usabilidad para desarrolladores — IPO">
+<title>Técnicas de Usabilidad</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          brand: { deep: '#0c4a6e', DEFAULT: '#0f766e', light: '#14b8a6', muted: '#ccfbf1' },
+          accent: { DEFAULT: '#ea580c', soft: '#ffedd5' },
+          surface: { DEFAULT: '#f4f1ec', card: '#ffffff' }
+        },
+        fontFamily: { sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'] }
+      }
+    }
+  };
+</script>
+<link rel="stylesheet" href="static/theme.css?v=3">
 </head>
 <body class="page-home text-stone-900 antialiased">
-  {{template "skip-link" .}}
+  <a href="#main-content" class="skip-link">Saltar al contenido principal</a>
 
   <header class="relative overflow-hidden bg-gradient-to-br from-brand-deep via-brand to-teal-600 text-white">
     <div class="absolute inset-0 opacity-30" aria-hidden="true">
@@ -231,7 +253,11 @@
     </div>
   </main>
 
-  {{template "footer-public" .}}
+  <footer class="border-t border-stone-200 bg-white mt-16">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 text-center text-sm text-stone-500">
+    <p class="font-medium">IPO · Técnicas de Usabilidad · versión estática</p>
+  </div>
+</footer>
 
   <div id="wizard-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="modal-title">
     <div class="absolute inset-0 bg-brand-deep/70 backdrop-blur-sm" data-close-modal></div>
@@ -272,6 +298,6 @@
     </div>
   </div>
 
-  <script src="/static/app.js?v=3"></script>
+  <script src="static/app.js?v=4"></script>
 </body>
 </html>

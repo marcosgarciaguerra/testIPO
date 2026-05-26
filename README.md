@@ -57,6 +57,33 @@ static/     app.js images/*.svg
 go test ./...
 ```
 
+## Accesibilidad (WCAG 2.1 nivel AA)
+
+La interfaz pública y el panel admin siguen prácticas para cumplir **WCAG 2.1 AA**. Antes de publicar cambios de UI, revisa:
+
+### Checklist manual
+
+- [ ] **Saltar al contenido:** con Tab, el primer foco muestra el enlace “Saltar al contenido principal” y lleva a `#main-content`.
+- [ ] **Solo teclado:** recorrer `/` (buscador, filtros, tarjetas, wizard, tour manual, modal, drawer móvil) sin ratón.
+- [ ] **Foco visible:** todos los controles interactivos muestran indicador de foco claro.
+- [ ] **Contraste:** texto del hero y wizard legible sobre el degradado (clases `hero-text-muted` / `hero-text-subtle` en `theme.css`).
+- [ ] **Tour:** no se inicia solo; solo al pulsar “¿Cómo usar la web?”.
+- [ ] **Vista previa:** al enfocar una tarjeta con Tab aparece la vista previa (como con hover).
+- [ ] **Movimiento reducido:** con `prefers-reduced-motion: reduce` en el SO, animaciones y scroll suave se reducen.
+- [ ] **Formularios:** errores del wizard y del admin se anuncian y se asocian al campo (`aria-invalid`, `aria-describedby`).
+
+### Verificación automatizada (opcional)
+
+1. Abre la app (`go run .`).
+2. En Chrome DevTools → **Lighthouse** → categoría *Accessibility* en `/`, `/tecnicas/heuristicas` (o cualquier id) y `/admin`. Objetivo: puntuación ≥ 90.
+3. Extensión **axe DevTools:** flujos buscar → filtrar → ficha → wizard → tour; sin incidencias críticas o serias.
+
+### Archivos relevantes
+
+- `templates/partials/skip-link.html`, `templates/index.html`, `detail.html`, `admin.html`
+- `static/app.js` — foco en modales, drawer, tour; preview por teclado; tarjetas como enlaces `<a>`
+- `static/theme.css` — skip link, contraste hero, `prefers-reduced-motion`
+
 ## Autenticación API
 
 Peticiones de escritura requieren **HTTP Basic Auth** con `ADMIN_USER` / `ADMIN_PASS`.

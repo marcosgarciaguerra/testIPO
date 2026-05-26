@@ -20,6 +20,39 @@ body {
   color: var(--ink);
 }
 
+/* Enlace para saltar al contenido (WCAG 2.4.1) */
+.skip-link {
+  position: fixed;
+  top: 0.75rem;
+  left: 0.75rem;
+  z-index: 200;
+  padding: 0.625rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #fff;
+  background: var(--brand-deep);
+  border: 2px solid #fff;
+  border-radius: 0.5rem;
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-150%);
+  transition: transform 0.15s ease;
+}
+
+.skip-link:focus {
+  transform: translateY(0);
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Texto sobre hero con contraste AA */
+.hero-text-muted {
+  color: #e0f2f1;
+}
+
+.hero-text-subtle {
+  color: #ccfbf1;
+}
+
 /* Fondo decorativo sutil */
 body.page-home {
   background-image:
@@ -127,6 +160,9 @@ body.page-home {
 
 /* Tarjetas */
 .technique-card {
+  display: flex;
+  text-decoration: none;
+  color: inherit;
   border-radius: 1rem;
   border: 1px solid var(--border);
   background: var(--surface-elevated);
@@ -206,5 +242,24 @@ body.page-home {
 #filters-section::-webkit-scrollbar-thumb {
   background-color: rgb(212 212 210);
   border-radius: 9999px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .technique-card:hover {
+    transform: none;
+  }
+
+  .skip-link {
+    transition: none;
+  }
 }
 

@@ -4,6 +4,7 @@
   {{template "head" .}}
 </head>
 <body class="page-home text-stone-900 antialiased">
+  {{template "skip-link" .}}
 
   <header class="relative overflow-hidden bg-gradient-to-br from-brand-deep via-brand to-teal-600 text-white">
     <div class="absolute inset-0 opacity-30" aria-hidden="true">
@@ -13,8 +14,8 @@
 
     <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
       <!-- Help/Tour Button -->
-      <button type="button" id="start-tour-btn" class="absolute top-4 right-4 sm:top-6 sm:right-8 px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white border border-white/20 text-xs font-bold flex items-center gap-1.5 transition-all backdrop-blur-sm shadow-md hover:scale-105 active:scale-95" aria-label="Iniciar guía interactiva de usabilidad">
-        <svg class="h-4 w-4 text-teal-200" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+      <button type="button" id="start-tour-btn" class="absolute top-4 right-4 sm:top-6 sm:right-8 px-4 py-2 rounded-xl bg-white/20 hover:bg-white/30 text-white border border-white/40 text-xs font-bold flex items-center gap-1.5 transition-all backdrop-blur-sm shadow-md hover:scale-105 active:scale-95" aria-label="Iniciar guía interactiva de usabilidad">
+        <svg class="h-4 w-4 text-teal-200" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" aria-hidden="true">
           <path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z" />
         </svg>
         <span>¿Cómo usar la web?</span>
@@ -22,7 +23,7 @@
 
       <p class="text-xs font-bold uppercase tracking-[0.2em] text-white">IPO · Guía para desarrolladores</p>
       <h1 class="mt-3 text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white">Técnicas de Usabilidad</h1>
-      <p class="mt-4 text-lg sm:text-xl text-teal-50/95 max-w-2xl leading-relaxed">
+      <p class="mt-4 text-lg sm:text-xl hero-text-muted max-w-2xl leading-relaxed">
         Encuentra, filtra y aplica métodos de UX sin experiencia previa. Busca por nombre, objetivo o palabras clave.
       </p>
 
@@ -36,12 +37,12 @@
             placeholder="Buscar técnica… p. ej. heurística, encuesta, card sorting"
             class="text-stone-900">
         </div>
-        <p class="mt-2 text-sm text-teal-50/90 hidden sm:block">Filtra al instante · <kbd class="rounded bg-white/15 px-1.5 py-0.5 text-xs font-mono">/</kbd> enfoca · <kbd class="rounded bg-white/15 px-1.5 py-0.5 text-xs font-mono">Esc</kbd> borra</p>
+        <p class="mt-2 text-sm hero-text-muted hidden sm:block">Filtra al instante · <kbd class="rounded bg-white/25 px-1.5 py-0.5 text-xs font-mono text-white">/</kbd> enfoca · <kbd class="rounded bg-white/25 px-1.5 py-0.5 text-xs font-mono text-white">Esc</kbd> borra</p>
       </div>
 
       <section class="mt-10 p-6 sm:p-8 rounded-2xl bg-white/10 backdrop-blur-md border border-white/25 shadow-xl" aria-labelledby="wizard-heading">
         <h2 id="wizard-heading" class="text-xl sm:text-2xl font-bold">¿No sabes por dónde empezar?</h2>
-        <p class="mt-2 text-teal-50/90 text-sm sm:text-base">Responde tres preguntas y te recomendamos una técnica.</p>
+        <p class="mt-2 hero-text-muted text-sm sm:text-base">Responde tres preguntas y te recomendamos una técnica.</p>
 
         <div id="wizard-banner" class="hidden mt-4 rounded-xl px-4 py-3 text-sm" role="alert"></div>
 
@@ -54,37 +55,37 @@
         <div id="wizard-panel" class="mt-6">
           <div class="wizard-step" data-step="1">
             <label for="wizard-tipo" class="text-sm font-semibold text-white mb-2 block">1/3 · ¿Qué tipo de técnica te gustaría aplicar?</label>
-            <select id="wizard-tipo" aria-required="true" class="w-full rounded-xl border-0 bg-white text-stone-800 px-3 py-2.5 text-sm font-medium focus:ring-2 focus:ring-accent">
+            <select id="wizard-tipo" aria-required="true" aria-describedby="wizard-tipo-help" class="w-full rounded-xl border-0 bg-white text-stone-800 px-3 py-2.5 text-sm font-medium focus:ring-2 focus:ring-accent">
               <option value="">Selecciona…</option>
               <option value="insight">Insight</option>
               <option value="inquiry">Inquiry</option>
               <option value="testing">Testing</option>
             </select>
             <!-- Help text to reduce UX friction -->
-            <p id="wizard-tipo-help" class="mt-2 text-xs text-teal-100/90 italic leading-relaxed min-h-[2.5rem]">
+            <p id="wizard-tipo-help" class="mt-2 text-xs hero-text-subtle italic leading-relaxed min-h-[2.5rem]">
               Selecciona un tipo para ver su definición y entender qué hace.
             </p>
           </div>
           <div class="wizard-step hidden" data-step="2">
             <label for="wizard-duration" class="text-sm font-semibold text-white mb-2 block">2/3 · ¿Cuánto tiempo tienes disponible para ejecutarla?</label>
-            <select id="wizard-duration" aria-required="true" class="w-full rounded-xl border-0 bg-white text-stone-800 px-3 py-2.5 text-sm font-medium focus:ring-2 focus:ring-accent">
+            <select id="wizard-duration" aria-required="true" aria-describedby="wizard-duration-help" class="w-full rounded-xl border-0 bg-white text-stone-800 px-3 py-2.5 text-sm font-medium focus:ring-2 focus:ring-accent">
               <option value="">Selecciona…</option>
               <option value="30min">30 min</option>
               <option value="1h">1h</option>
               <option value="1h+">1h+</option>
             </select>
-            <p id="wizard-duration-help" class="mt-2 text-xs text-teal-100/90 italic leading-relaxed min-h-[2.5rem]">
+            <p id="wizard-duration-help" class="mt-2 text-xs hero-text-subtle italic leading-relaxed min-h-[2.5rem]">
               Selecciona el tiempo estimado del que dispones para ejecutar la técnica.
             </p>
           </div>
           <div class="wizard-step hidden" data-step="3">
             <label for="wizard-results" class="text-sm font-semibold text-white mb-2 block">3/3 · ¿Qué tipo de información necesitas recolectar?</label>
-            <select id="wizard-results" aria-required="true" class="w-full rounded-xl border-0 bg-white text-stone-800 px-3 py-2.5 text-sm font-medium focus:ring-2 focus:ring-accent">
+            <select id="wizard-results" aria-required="true" aria-describedby="wizard-results-help" class="w-full rounded-xl border-0 bg-white text-stone-800 px-3 py-2.5 text-sm font-medium focus:ring-2 focus:ring-accent">
               <option value="">Selecciona…</option>
               <option value="cuantitativos">Cuantitativos</option>
               <option value="cualitativos">Cualitativos</option>
             </select>
-            <p id="wizard-results-help" class="mt-2 text-xs text-teal-100/90 italic leading-relaxed min-h-[2.5rem]">
+            <p id="wizard-results-help" class="mt-2 text-xs hero-text-subtle italic leading-relaxed min-h-[2.5rem]">
               Selecciona el tipo de datos que necesitas recolectar del usuario.
             </p>
           </div>
@@ -94,16 +95,16 @@
           <button type="button" id="wizard-prev" class="hidden rounded-xl border border-white/40 px-4 py-2.5 text-sm font-semibold hover:bg-white/10 focus:ring-2 focus:ring-white/50">Anterior</button>
           <button type="button" id="wizard-next" class="rounded-xl bg-accent hover:bg-orange-600 text-white font-bold px-5 py-2.5 text-sm shadow-md focus:ring-2 focus:ring-orange-300">Siguiente</button>
           <button type="button" id="wizard-submit" class="hidden rounded-xl bg-white text-brand-deep font-bold px-5 py-2.5 text-sm hover:bg-teal-50 focus:ring-2 focus:ring-white">Recomendar técnica</button>
-          <button type="button" id="wizard-restart" class="hidden rounded-xl text-teal-100 text-sm font-medium underline hover:text-white">Reiniciar</button>
+          <button type="button" id="wizard-restart" class="hidden rounded-xl hero-text-subtle text-sm font-medium underline hover:text-white">Reiniciar</button>
         </div>
       </section>
     </div>
   </header>
 
-  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+  <main id="main-content" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
 
     <!-- Mobile Filter Floating Action Button -->
-    <button id="mobile-filter-toggle" class="fixed bottom-6 right-6 z-30 sm:hidden flex items-center justify-center gap-2 rounded-full bg-brand text-white px-6 py-4 font-bold shadow-2xl hover:bg-brand-deep hover:scale-105 active:scale-95 transition-all animate-fade-in" aria-label="Abrir filtros de técnicas">
+    <button id="mobile-filter-toggle" type="button" class="fixed bottom-6 right-6 z-30 sm:hidden flex items-center justify-center gap-2 rounded-full bg-brand text-white px-6 py-4 font-bold shadow-2xl hover:bg-brand-deep hover:scale-105 active:scale-95 transition-all animate-fade-in" aria-label="Abrir filtros de técnicas" aria-expanded="false" aria-controls="filters-section">
       <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" aria-hidden="true">
         <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6h9.75M10.5 6a1.5 1.5 0 1 1-3 0m3 0a1.5 1.5 0 1 0-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-9.75 0h9.75" />
       </svg>
@@ -111,7 +112,7 @@
     </button>
 
     <!-- Mobile Filter Drawer Backdrop Overlay -->
-    <div id="filter-drawer-backdrop" class="fixed inset-0 z-40 bg-brand-deep/50 backdrop-blur-sm hidden transition-opacity duration-300 opacity-0 pointer-events-none sm:hidden"></div>
+    <div id="filter-drawer-backdrop" class="fixed inset-0 z-40 bg-brand-deep/50 backdrop-blur-sm hidden transition-opacity duration-300 opacity-0 pointer-events-none sm:hidden" aria-hidden="true"></div>
 
     <!-- Responsive Filter Panel (Sticky on Desktop, sliding Drawer on Mobile) -->
     <section id="filters-section" class="fixed inset-y-0 right-0 z-50 w-full max-w-[26rem] bg-white shadow-2xl p-6 transform translate-x-full transition-transform duration-300 ease-in-out overflow-y-auto flex flex-col sm:relative sm:inset-auto sm:z-20 sm:w-auto sm:max-w-none sm:bg-surface/90 sm:backdrop-blur-md sm:border-b sm:border-stone-200/80 sm:mb-8 sm:rounded-b-2xl sm:translate-x-0 sm:p-4 sm:shadow-none sm:transition-none" aria-labelledby="filters-heading">
@@ -244,19 +245,19 @@
       <div class="mt-6 flex flex-col sm:flex-row gap-3">
         <a id="modal-detail-link" href="#" class="flex-1 text-center rounded-xl bg-brand text-white font-bold py-2.5 text-sm hover:bg-brand-deep focus:ring-2 focus:ring-brand-light">Ver ficha completa</a>
         <button type="button" id="modal-go-card" class="flex-1 rounded-xl border-2 border-brand/30 text-brand font-bold py-2.5 text-sm hover:bg-brand-muted">Ver en la lista</button>
-        <button type="button" data-close-modal class="flex-1 rounded-xl border border-stone-200 text-stone-600 font-semibold py-2.5 text-sm hover:bg-stone-50">Cerrar</button>
+        <button type="button" data-close-modal class="flex-1 rounded-xl border border-stone-200 text-stone-600 font-semibold py-2.5 text-sm hover:bg-stone-50" aria-label="Cerrar diálogo de recomendación">Cerrar</button>
       </div>
     </div>
   </div>
 
   <!-- Custom Guided Onboarding Tour Elements -->
-  <div id="onboarding-overlay" class="hidden fixed inset-0 z-[120] bg-brand-deep/40 backdrop-blur-sm pointer-events-none transition-all duration-300 opacity-0"></div>
+  <div id="onboarding-overlay" class="hidden fixed inset-0 z-[120] bg-brand-deep/40 backdrop-blur-sm pointer-events-none transition-all duration-300 opacity-0" aria-hidden="true"></div>
   <div id="onboarding-spotlight" class="hidden fixed z-[130] rounded-xl ring-[9999px] ring-brand-deep/60 shadow-2xl transition-all duration-300 pointer-events-none border-2 border-brand-light"></div>
   
   <div id="onboarding-card" class="hidden fixed z-[140] w-[min(22rem,calc(100vw-2rem))] rounded-2xl bg-white border border-stone-200 shadow-2xl p-5 flex flex-col transition-all duration-300 pointer-events-auto" role="dialog" aria-modal="true" aria-labelledby="tour-title">
     <div class="flex items-center justify-between mb-3">
       <span id="tour-step-badge" class="rounded-full bg-brand-muted text-brand px-2.5 py-0.5 text-xs font-bold font-mono">Paso 1 de 3</span>
-      <button type="button" id="tour-skip" class="text-xs font-bold text-stone-400 hover:text-stone-600 p-1 transition-colors">Omitir</button>
+      <button type="button" id="tour-skip" class="text-xs font-bold text-stone-400 hover:text-stone-600 p-1 transition-colors" aria-label="Cerrar guía">Omitir</button>
     </div>
     <h3 id="tour-title" class="text-sm font-extrabold text-stone-900"></h3>
     <p id="tour-body" class="mt-2 text-xs text-stone-600 leading-relaxed"></p>
@@ -271,6 +272,6 @@
     </div>
   </div>
 
-  <script src="/static/app.js?v=2"></script>
+  <script src="/static/app.js?v=3"></script>
 </body>
 </html>

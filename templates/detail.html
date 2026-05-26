@@ -4,25 +4,26 @@
   {{template "head" .}}
 </head>
 <body class="text-stone-900 antialiased bg-surface">
+  {{template "skip-link" .}}
 
   <header class="relative overflow-hidden bg-gradient-to-br from-brand-deep via-brand to-teal-600 text-white">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 py-10">
       <nav aria-label="Navegación de retorno">
-        <a href="/" class="inline-flex items-center gap-1 text-sm font-semibold text-teal-100 hover:text-white focus:underline">
+        <a href="/" class="inline-flex items-center gap-1 text-sm font-semibold hero-text-subtle hover:text-white focus:underline">
           <span aria-hidden="true">←</span> Volver al catálogo
         </a>
       </nav>
       <div class="mt-6 flex flex-col sm:flex-row items-start gap-6">
         <img src="{{ .Technique.ImageURL }}" alt="{{ .Technique.ImageAlt }}" class="w-full sm:w-52 h-36 sm:h-36 object-cover rounded-2xl border-2 border-white/30 shadow-xl ring-4 ring-white/10">
         <div>
-          <p class="text-xs font-bold uppercase tracking-widest text-teal-100/90">Ficha técnica</p>
+          <p class="text-xs font-bold uppercase tracking-widest hero-text-muted">Ficha técnica</p>
           <h1 class="mt-2 text-2xl sm:text-3xl font-extrabold">{{ .Technique.Name }}</h1>
         </div>
       </div>
     </div>
   </header>
 
-  <main class="max-w-4xl mx-auto px-4 sm:px-6 py-10">
+  <main id="main-content" class="max-w-4xl mx-auto px-4 sm:px-6 py-10">
     <section class="rounded-2xl bg-white border border-stone-200 shadow-lg p-6 sm:p-8 space-y-8">
       <div>
         <h2 class="text-xs font-bold uppercase tracking-wider text-brand">Introducción</h2>

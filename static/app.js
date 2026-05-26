@@ -25,6 +25,19 @@
   var previewFloatBody = document.getElementById('preview-float-body');
   var cardsArea = document.getElementById('cards-area');
   var hoveredCard = null;
+  var mainContent = document.getElementById('main-content');
+  var WIZARD_SELECT_IDS = ['wizard-tipo', 'wizard-duration', 'wizard-results'];
+
+  function prefersReducedMotion() {
+    return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  }
+
+  function scrollIntoViewSmooth(el, options) {
+    if (!el) return;
+    var opts = options || {};
+    opts.behavior = prefersReducedMotion() ? 'auto' : (opts.behavior || 'smooth');
+    el.scrollIntoView(opts);
+  }
 
   function escapeHtml(s) {
     var d = document.createElement('div');
@@ -119,21 +132,21 @@
     var searchText = [t.name, t.objective, t.introduction, t.lifecycle, t.methodType, t.qualQuant, t.tipo, t.people]
       .concat(t.howTo || [])
       .join(' ');
-    var article = document.createElement('article');
-    article.id = 'card-' + t.id;
-    article.className = 'technique-card flex flex-col overflow-hidden cursor-pointer';
-    article.dataset.id = t.id;
-    article.dataset.people = t.people || '';
-    article.dataset.modality = t.modality || '';
-    article.dataset.tipo = t.tipo || '';
-    article.dataset.duration = t.duration || '';
-    article.dataset.results = t.results || '';
-    article.dataset.introduction = t.introduction || '';
-    article.dataset.search = searchText;
-    article.setAttribute('role', 'link');
-    article.setAttribute('tabindex', '0');
-    article.setAttribute('aria-label', 'Técnica: ' + t.name);
-    var filtersHtml = '<div class="mt-2 flex flex-wrap gap-1.5 text-xs font-semibold" data-role="card-filters">';
+    var link = document.createElement('a');
+    link.id = 'card-' + t.id;
+    link.href = '/tecnicas/' + t.id;
+    link.className = 'technique-card flex flex-col overflow-hidden cursor-pointer group';
+    link.dataset.id = t.id;
+    link.dataset.people = t.people || '';
+    link.dataset.modality = t.modality || '';
+    link.dataset.tipo = t.tipo || '';
+    link.dataset.duration = t.duration || '';
+    link.dataset.results = t.results || '';
+    link.dataset.introduction = t.introduction || '';
+    link.dataset.search = searchText;
+    link.setAttribute('aria-label', 'Ver ficha de la técnica: ' + t.name);
+
+    var filtersHtml = '<div class="mt-2 flex flex-wrap gap-1.5 text-xs font-semibold" data-role="card-filters">';
     if (t.tipo) filtersHtml += '<span class="rounded px-2.5 py-1 transition-all duration-200" data-filter-name="tipo" data-filter-value="' + escapeHtml(t.tipo) + '" title="Tipo">' + escapeHtml(label(LABELS.tipo, t.tipo)) + '</span>';
     if (t.duration) filtersHtml += '<span class="rounded px-2.5 py-1 transition-all duration-200" data-filter-name="duration" data-filter-value="' + escapeHtml(t.duration) + '" title="Duración">' + escapeHtml(label(LABELS.duration, t.duration)) + '</span>';
     if (t.modality) {
@@ -147,7 +160,7 @@
     }
     filtersHtml += '</div>';
 
-    article.innerHTML =
+    link.innerHTML =
       '<div class="aspect-[5/3] bg-stone-100 overflow-hidden">' +
         '<img src="' + escapeHtml(img) + '" alt="' + escapeHtml(t.imageAlt || t.name) + '" class="w-full h-full object-cover" loading="lazy">' +
       '</div>' +
@@ -161,17 +174,7 @@
         '<span class="mt-4 w-full text-center rounded-xl bg-brand-muted text-brand font-bold text-sm py-2.5 group-hover:bg-brand group-hover:text-white transition-colors">Ver ficha</span>' +
       '</div>';
 
-    article.addEventListener('click', function () {
-      window.location.href = '/tecnicas/' + t.id;
-    });
-    article.addEventListener('keydown', function (e) {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        window.location.href = '/tecnicas/' + t.id;
-      }
-    });
-
-    return article;
+    return link;
   }
 
   function bindCardPreview() {
@@ -181,6 +184,13 @@
         showPreviewForCard(card);
       });
       card.addEventListener('mouseleave', function () {
+        scheduleHidePreview();
+      });
+      card.addEventListener('focus', function () {
+        clearTimeout(previewHideTimer);
+        showPreviewForCard(card);
+      });
+      card.addEventListener('blur', function () {
         scheduleHidePreview();
       });
     });
@@ -384,35 +394,60 @@
   var filterDrawerBackdrop = document.getElementById('filter-drawer-backdrop');
   var closeFiltersMobile = document.getElementById('close-filters-mobile');
   var applyFiltersMobile = document.getElementById('apply-filters-mobile');
+  var drawerFocusReturn = null;
+  var drawerTrapHandler = null;
 
   function openFiltersDrawer() {
     if (!filtersSection) return;
+    drawerFocusReturn = document.activeElement;
     document.body.classList.add('overflow-hidden');
     filtersSection.classList.remove('translate-x-full');
     filtersSection.classList.add('translate-x-0');
+    if (mobileFilterToggle) mobileFilterToggle.setAttribute('aria-expanded', 'true');
+    if (mainContent) mainContent.setAttribute('aria-hidden', 'true');
     if (filterDrawerBackdrop) {
       filterDrawerBackdrop.classList.remove('hidden');
       filterDrawerBackdrop.classList.add('block');
+      filterDrawerBackdrop.setAttribute('aria-hidden', 'false');
       requestAnimationFrame(function () {
         filterDrawerBackdrop.classList.remove('opacity-0', 'pointer-events-none');
         filterDrawerBackdrop.classList.add('opacity-100', 'pointer-events-auto');
       });
     }
+    drawerTrapHandler = trapFocus(filtersSection);
+    document.addEventListener('keydown', drawerTrapHandler);
+    if (closeFiltersMobile) {
+      closeFiltersMobile.focus();
+    } else {
+      var firstInput = filtersSection.querySelector('input, button, select');
+      if (firstInput) firstInput.focus();
+    }
   }
 
   function closeFiltersDrawer() {
     if (!filtersSection) return;
+    if (drawerTrapHandler) {
+      document.removeEventListener('keydown', drawerTrapHandler);
+      drawerTrapHandler = null;
+    }
     document.body.classList.remove('overflow-hidden');
     filtersSection.classList.add('translate-x-full');
     filtersSection.classList.remove('translate-x-0');
+    if (mobileFilterToggle) mobileFilterToggle.setAttribute('aria-expanded', 'false');
+    if (mainContent) mainContent.removeAttribute('aria-hidden');
     if (filterDrawerBackdrop) {
       filterDrawerBackdrop.classList.remove('opacity-100', 'pointer-events-auto');
       filterDrawerBackdrop.classList.add('opacity-0', 'pointer-events-none');
+      filterDrawerBackdrop.setAttribute('aria-hidden', 'true');
       setTimeout(function () {
         filterDrawerBackdrop.classList.add('hidden');
         filterDrawerBackdrop.classList.remove('block');
       }, 300);
     }
+    if (drawerFocusReturn && typeof drawerFocusReturn.focus === 'function') {
+      drawerFocusReturn.focus();
+    }
+    drawerFocusReturn = null;
   }
 
   if (mobileFilterToggle) mobileFilterToggle.addEventListener('click', openFiltersDrawer);
@@ -474,16 +509,36 @@
   var wizRestart = document.getElementById('wizard-restart');
   var wizDots = [1, 2, 3].map(function (n) { return document.getElementById('wiz-dot-' + n); });
 
+  function clearWizardFieldErrors() {
+    WIZARD_SELECT_IDS.forEach(function (id) {
+      var el = document.getElementById(id);
+      if (!el) return;
+      el.removeAttribute('aria-invalid');
+      el.setAttribute('aria-describedby', id + '-help');
+    });
+  }
+
+  function setWizardFieldError(selectEl) {
+    clearWizardFieldErrors();
+    if (!selectEl) return;
+    selectEl.setAttribute('aria-invalid', 'true');
+    var helpId = selectEl.id + '-help';
+    selectEl.setAttribute('aria-describedby', 'wizard-banner ' + helpId);
+  }
+
   function showWizardBanner(msg, type) {
     if (!wizardBanner) return;
     wizardBanner.textContent = msg;
-    wizardBanner.className = 'mt-4 rounded-lg px-4 py-3 text-sm ' +
-      (type === 'error' ? 'bg-red-500/20 text-red-100 border border-red-300/40' : 'bg-teal-500/20 text-teal-50 border border-teal-300/40');
+    wizardBanner.className = 'mt-4 rounded-xl px-4 py-3 text-sm font-medium ' +
+      (type === 'error'
+        ? 'bg-red-900/50 text-white border border-red-200'
+        : 'bg-teal-900/50 text-white border border-teal-200');
     wizardBanner.classList.remove('hidden');
   }
 
   function hideWizardBanner() {
     if (wizardBanner) wizardBanner.classList.add('hidden');
+    clearWizardFieldErrors();
   }
 
   function wizSelectForStep(step) {
@@ -511,6 +566,7 @@
     var sel = wizSelectForStep(wizStep);
     if (!sel.value) {
       showWizardBanner('Selecciona una opción antes de continuar.', 'error');
+      setWizardFieldError(sel);
       sel.focus();
       return;
     }
@@ -555,8 +611,11 @@
   var modalSecond = document.getElementById('modal-second-choice');
   var modalDetailLink = document.getElementById('modal-detail-link');
   var recommendedId = null;
+  var modalFocusReturn = null;
 
   var trapFocusHandler = null;
+  var tourFocusReturn = null;
+  var tourTrapHandler = null;
 
   function trapFocus(el) {
     var focusableEls = el.querySelectorAll('a[href]:not([disabled]), button:not([disabled]), textarea:not([disabled]), input[type="text"]:not([disabled]), input[type="radio"]:not([disabled]), input[type="checkbox"]:not([disabled]), select:not([disabled])');
@@ -582,6 +641,7 @@
   }
 
   function openModal(best, second, reasons) {
+    modalFocusReturn = document.activeElement;
     recommendedId = best.dataset.id;
     modalName.textContent = best.querySelector('h3').textContent;
     modalIntro.textContent = best.dataset.introduction || '';
@@ -607,7 +667,12 @@
       document.removeEventListener('keydown', trapFocusHandler);
       trapFocusHandler = null;
     }
-    wizSubmit.focus();
+    if (modalFocusReturn && typeof modalFocusReturn.focus === 'function') {
+      modalFocusReturn.focus();
+    } else if (wizSubmit) {
+      wizSubmit.focus();
+    }
+    modalFocusReturn = null;
   }
 
   document.querySelectorAll('[data-close-modal]').forEach(function (el) {
@@ -615,11 +680,20 @@
   });
 
   wizSubmit.addEventListener('click', function () {
-    var tipo = document.getElementById('wizard-tipo').value;
-    var duration = document.getElementById('wizard-duration').value;
-    var results = document.getElementById('wizard-results').value;
+    var tipoEl = document.getElementById('wizard-tipo');
+    var durationEl = document.getElementById('wizard-duration');
+    var resultsEl = document.getElementById('wizard-results');
+    var tipo = tipoEl.value;
+    var duration = durationEl.value;
+    var results = resultsEl.value;
     if (!tipo || !duration || !results) {
       showWizardBanner('Completa las tres preguntas.', 'error');
+      if (!tipo) setWizardFieldError(tipoEl);
+      else if (!duration) setWizardFieldError(durationEl);
+      else setWizardFieldError(resultsEl);
+      if (!tipo) tipoEl.focus();
+      else if (!duration) durationEl.focus();
+      else resultsEl.focus();
       return;
     }
     var ranked = rankMatches(tipo, duration, results);
@@ -639,7 +713,7 @@
     applyFilters();
     closeModal();
     var card = document.getElementById('card-' + recommendedId);
-    if (card) card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    if (card) scrollIntoViewSmooth(card, { block: 'center' });
   });
 
   /* Sistema de Onboarding Interactivo (Tour de 3 pasos) */
@@ -686,9 +760,12 @@
   function startTour() {
     isTourActive = true;
     currentTourStep = 0;
-    
+    tourFocusReturn = document.activeElement;
+    document.body.classList.add('overflow-hidden');
+
     if (onboardingOverlay) {
       onboardingOverlay.classList.remove('hidden');
+      onboardingOverlay.setAttribute('aria-hidden', 'true');
       setTimeout(function () {
         onboardingOverlay.classList.remove('opacity-0', 'pointer-events-none');
         onboardingOverlay.classList.add('opacity-100', 'pointer-events-auto');
@@ -697,11 +774,25 @@
     if (onboardingSpotlight) onboardingSpotlight.classList.remove('hidden');
     if (onboardingCard) onboardingCard.classList.remove('hidden');
 
+    if (onboardingCard) {
+      tourTrapHandler = trapFocus(onboardingCard);
+      document.addEventListener('keydown', tourTrapHandler);
+    }
+
     renderTourStep();
+
+    if (tourNext) {
+      setTimeout(function () { tourNext.focus(); }, 150);
+    }
   }
 
   function endTour(completed) {
     isTourActive = false;
+    document.body.classList.remove('overflow-hidden');
+    if (tourTrapHandler) {
+      document.removeEventListener('keydown', tourTrapHandler);
+      tourTrapHandler = null;
+    }
     if (onboardingOverlay) {
       onboardingOverlay.classList.remove('opacity-100', 'pointer-events-auto');
       onboardingOverlay.classList.add('opacity-0', 'pointer-events-none');
@@ -713,6 +804,13 @@
     if (completed) {
       localStorage.setItem('ipo_onboarding_completed', 'true');
     }
+
+    if (startTourBtn && typeof startTourBtn.focus === 'function') {
+      startTourBtn.focus();
+    } else if (tourFocusReturn && typeof tourFocusReturn.focus === 'function') {
+      tourFocusReturn.focus();
+    }
+    tourFocusReturn = null;
   }
 
   function renderTourStep() {
@@ -751,7 +849,7 @@
         closeFiltersDrawer();
       }
       
-      targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      scrollIntoViewSmooth(targetEl, { block: 'center' });
       
       // Give browser time to finish scrolling
       setTimeout(function () {
@@ -848,7 +946,7 @@
     if (e.key === '/' && document.activeElement !== searchInput && searchInput) {
       e.preventDefault();
       searchInput.focus();
-      searchInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      scrollIntoViewSmooth(searchInput, { block: 'center' });
     }
   });
 
@@ -874,10 +972,5 @@
     }
   }, true);
 
-  loadTechniques().then(applyFiltersFromURL).then(function () {
-    // Check if onboarding needs to auto-run
-    if (!localStorage.getItem('ipo_onboarding_completed')) {
-      setTimeout(startTour, 1200);
-    }
-  });
+  loadTechniques().then(applyFiltersFromURL);
 })();

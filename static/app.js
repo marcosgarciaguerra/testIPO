@@ -182,7 +182,7 @@
           '<p class="card-filters-label mb-2">Filtros coincidentes:</p>' +
           filtersHtml +
         '</div>' +
-        '<span class="mt-4 w-full text-center rounded-xl bg-brand-muted text-brand font-bold text-sm py-2.5 group-hover:bg-brand group-hover:text-white transition-colors">Ver ficha</span>' +
+        '<span class="card-cta">Ver ficha</span>' +
       '</div>';
 
     return link;

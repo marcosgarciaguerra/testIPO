@@ -177,7 +177,7 @@
       '</div>' +
       '<div class="flex flex-col flex-1 p-5">' +
         '<h3 class="text-lg font-bold text-stone-900">' + escapeHtml(t.name) + '</h3>' +
-        '<p class="mt-3 text-sm text-stone-600 line-clamp-3 flex-1">' + escapeHtml(t.introduction) + '</p>' +
+        '<p class="mt-3 text-sm card-intro line-clamp-3 flex-1">' + escapeHtml(t.introduction) + '</p>' +
         '<div class="mt-4 pt-3 border-t border-stone-100">' +
           '<p class="card-filters-label mb-2">Filtros coincidentes:</p>' +
           filtersHtml +

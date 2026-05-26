@@ -154,6 +154,19 @@ body {
   color: #44403c;
 }
 
+.result-count-meta {
+  color: #292524;
+  font-weight: 600;
+}
+
+.card-intro {
+  color: #44403c;
+}
+
+.text-muted-accessible {
+  color: #44403c;
+}
+
 /* Fondo decorativo sutil */
 body.page-home {
   background-image:

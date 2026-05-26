@@ -31,7 +31,7 @@ head = """<meta charset="UTF-8">
     }
   };
 </script>
-<link rel="stylesheet" href="static/theme.css?v=6">"""
+<link rel="stylesheet" href="static/theme.css?v=7">"""
 
 footer = """<footer class="border-t border-stone-200 bg-white mt-16">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 text-center text-sm footer-muted">
@@ -50,7 +50,7 @@ content = content.replace(
     '<a href="#main-content" class="skip-link">Saltar al contenido principal</a>',
 )
 content = content.replace('{{template "footer-public" .}}', footer)
-content = content.replace('src="/static/app.js?v=3"', 'src="static/app.js?v=5"')
+content = content.replace('src="/static/app.js?v=3"', 'src="static/app.js?v=6"')
 
 replacements = [
     (
@@ -67,6 +67,15 @@ replacements = [
     (
         'class="mt-2 text-sm text-teal-50/90 hidden sm:block">Filtra al instante · <kbd class="rounded bg-white/15 px-1.5 py-0.5 text-xs font-mono">/</kbd> enfoca · <kbd class="rounded bg-white/15 px-1.5 py-0.5 text-xs font-mono">Esc</kbd> borra</p>',
         'class="mt-2 text-sm hero-on-dark hidden sm:block">Filtra al instante &middot; <kbd class="hero-kbd">/</kbd> enfoca &middot; <kbd class="hero-kbd">Esc</kbd> borra</p>',
+    ),
+    (
+        '<kbd class="rounded bg-white/25 px-1.5 py-0.5 text-xs font-mono text-white">',
+        '<kbd class="hero-kbd">',
+    ),
+    ('class="h-4 w-4 text-teal-200"', 'class="h-4 w-4 text-white"'),
+    (
+        'class="text-sm font-medium text-stone-600 self-center font-semibold"',
+        'class="text-sm result-count-meta self-center font-semibold"',
     ),
     (
         'class="mt-10 p-6 sm:p-8 rounded-2xl bg-white/10 backdrop-blur-md border border-white/25 shadow-xl"',
@@ -98,7 +107,9 @@ replacements = [
     ('class="mt-2 text-sm text-stone-500 max-w-md', 'class="mt-2 text-sm text-stone-700 max-w-md'),
     ('class="mt-4 text-lg font-bold text-brand"', 'class="mt-4 text-lg font-bold text-brand-accessible"'),
     ('class="mt-2 text-sm font-semibold text-accent"', 'class="mt-2 text-sm font-semibold text-orange-800"'),
-    ('class="mt-1 text-sm text-stone-500"', 'class="mt-1 text-sm text-stone-700"'),
+    ('class="mt-1 text-sm text-stone-500"', 'class="mt-1 text-sm text-muted-accessible"'),
+    ('class="mt-2 text-sm text-stone-600 leading-relaxed"', 'class="mt-2 text-sm text-muted-accessible leading-relaxed"'),
+    ('class="mt-2 text-xs text-stone-600 leading-relaxed"', 'class="mt-2 text-xs text-muted-accessible leading-relaxed"'),
     ('class="hidden mt-2 text-xs text-stone-500 italic"', 'class="hidden mt-2 text-xs text-stone-700 italic"'),
     (
         'class="flex-1 rounded-xl border-2 border-brand/30 text-brand font-bold py-2.5 text-sm hover:bg-brand-muted"',
@@ -138,6 +149,7 @@ replacements = [
         'id="tour-next" class="btn-primary-solid rounded-xl font-bold',
     ),
     ('·', '&middot;'),
+    ('\ufffd', ''),
 ]
 
 for old, new in replacements:

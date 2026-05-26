@@ -157,17 +157,17 @@
     link.dataset.search = searchText;
     link.setAttribute('aria-label', 'Ver ficha de la técnica: ' + t.name);
 
-    var filtersHtml = '<div class="mt-2 flex flex-wrap gap-1.5 text-xs font-semibold" data-role="card-filters">';
-    if (t.tipo) filtersHtml += '<span class="rounded px-2.5 py-1 transition-all duration-200" data-filter-name="tipo" data-filter-value="' + escapeHtml(t.tipo) + '" title="Tipo">' + escapeHtml(label(LABELS.tipo, t.tipo)) + '</span>';
-    if (t.duration) filtersHtml += '<span class="rounded px-2.5 py-1 transition-all duration-200" data-filter-name="duration" data-filter-value="' + escapeHtml(t.duration) + '" title="Duración">' + escapeHtml(label(LABELS.duration, t.duration)) + '</span>';
+    var filtersHtml = '<div class="mt-2 flex flex-wrap gap-1.5" data-role="card-filters">';
+    if (t.tipo) filtersHtml += '<span class="card-filter-chip card-filter-chip--tipo" data-filter-name="tipo" data-filter-value="' + escapeHtml(t.tipo) + '" title="Tipo">' + escapeHtml(label(LABELS.tipo, t.tipo)) + '</span>';
+    if (t.duration) filtersHtml += '<span class="card-filter-chip card-filter-chip--duration" data-filter-name="duration" data-filter-value="' + escapeHtml(t.duration) + '" title="Duración">' + escapeHtml(label(LABELS.duration, t.duration)) + '</span>';
     if (t.modality) {
       var modLabels = t.modality.split(',').map(function (m) { return label(LABELS.modality, m.trim()); }).join(', ');
-      filtersHtml += '<span class="rounded px-2.5 py-1 transition-all duration-200" data-filter-name="modality" data-filter-value="' + escapeHtml(t.modality) + '" title="Modalidad">' + escapeHtml(modLabels) + '</span>';
+      filtersHtml += '<span class="card-filter-chip card-filter-chip--modality" data-filter-name="modality" data-filter-value="' + escapeHtml(t.modality) + '" title="Modalidad">' + escapeHtml(modLabels) + '</span>';
     }
-    if (t.people) filtersHtml += '<span class="rounded px-2.5 py-1 transition-all duration-200" data-filter-name="people" data-filter-value="' + escapeHtml(t.people) + '" title="Personas">' + escapeHtml(label(LABELS.people, t.people)) + ' Pers</span>';
+    if (t.people) filtersHtml += '<span class="card-filter-chip card-filter-chip--people" data-filter-name="people" data-filter-value="' + escapeHtml(t.people) + '" title="Personas">' + escapeHtml(label(LABELS.people, t.people)) + ' Pers</span>';
     if (t.results) {
       var resLabels = t.results.split(',').map(function (r) { return label(LABELS.results, r.trim()); }).join(', ');
-      filtersHtml += '<span class="rounded px-2.5 py-1 transition-all duration-200" data-filter-name="results" data-filter-value="' + escapeHtml(t.results) + '" title="Resultados">' + escapeHtml(resLabels) + '</span>';
+      filtersHtml += '<span class="card-filter-chip card-filter-chip--results" data-filter-name="results" data-filter-value="' + escapeHtml(t.results) + '" title="Resultados">' + escapeHtml(resLabels) + '</span>';
     }
     filtersHtml += '</div>';
 
@@ -179,7 +179,7 @@
         '<h3 class="text-lg font-bold text-stone-900">' + escapeHtml(t.name) + '</h3>' +
         '<p class="mt-3 text-sm text-stone-600 line-clamp-3 flex-1">' + escapeHtml(t.introduction) + '</p>' +
         '<div class="mt-4 pt-3 border-t border-stone-100">' +
-          '<p class="text-[10px] font-extrabold uppercase tracking-wider text-stone-400 mb-2">Filtros coincidentes:</p>' +
+          '<p class="card-filters-label mb-2">Filtros coincidentes:</p>' +
           filtersHtml +
         '</div>' +
         '<span class="mt-4 w-full text-center rounded-xl bg-brand-muted text-brand font-bold text-sm py-2.5 group-hover:bg-brand group-hover:text-white transition-colors">Ver ficha</span>' +
@@ -285,8 +285,13 @@
     }
     activeFiltersEl.classList.remove('hidden');
     activeFiltersEl.innerHTML = chips.map(function (chip) {
-      var bgCol = chip.name === 'people' ? 'bg-[#3b82f6]/20 text-[#3b82f6]' : chip.name === 'modality' ? 'bg-[#10b981]/20 text-[#10b981]' : chip.name === 'tipo' ? 'bg-[#f59e0b]/20 text-[#f59e0b]' : chip.name === 'duration' ? 'bg-[#8b5cf6]/20 text-[#8b5cf6]' : chip.name === 'results' ? 'bg-[#ec4899]/20 text-[#ec4899]' : 'bg-brand-muted text-brand';
-      return '<span class="inline-flex rounded-full px-3 py-1 text-xs font-semibold ' + bgCol + '">' + chip.text + '</span>';
+      var chipClass = chip.name === 'people' ? 'filter-active-chip--people'
+        : chip.name === 'modality' ? 'filter-active-chip--modality'
+        : chip.name === 'tipo' ? 'filter-active-chip--tipo'
+        : chip.name === 'duration' ? 'filter-active-chip--duration'
+        : chip.name === 'results' ? 'filter-active-chip--results'
+        : 'filter-active-chip--search';
+      return '<span class="filter-active-chip ' + chipClass + '">' + chip.text + '</span>';
     }).join('');
   }
 
@@ -339,14 +344,13 @@
           isMatch = (val === sel);
         }
       }
+      var baseChip = 'card-filter-chip card-filter-chip--' + name;
       if (isMatch) {
-        var bgCol = name === 'people' ? 'bg-[#3b82f6]' : name === 'modality' ? 'bg-[#10b981]' : name === 'tipo' ? 'bg-[#f59e0b]' : name === 'duration' ? 'bg-[#8b5cf6]' : 'bg-[#ec4899]';
-        span.className = 'rounded ' + bgCol + ' text-white px-2.5 py-1 shadow-sm font-bold scale-105 transition-all duration-200';
+        span.className = baseChip + ' is-match';
       } else if (anyActive) {
-        span.className = 'rounded bg-stone-100 text-stone-400 border border-stone-200/50 opacity-40 px-2.5 py-1 scale-95 transition-all duration-200';
+        span.className = baseChip + ' is-dimmed';
       } else {
-        var textCol = name === 'people' ? 'text-[#3b82f6]' : name === 'modality' ? 'text-[#10b981]' : name === 'tipo' ? 'text-[#f59e0b]' : name === 'duration' ? 'text-[#8b5cf6]' : 'text-[#ec4899]';
-        span.className = 'rounded bg-stone-100 ' + textCol + ' font-medium px-2.5 py-1 transition-all duration-200';
+        span.className = baseChip;
       }
     });
   }
